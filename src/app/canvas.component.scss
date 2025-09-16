@@ -1,0 +1,20 @@
+.canvas-container {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.canvas {
+  background: white;
+  border: 2px dashed #cbd5e0;
+  border-radius: 10px;
+  min-height: 600px;
+  position: relative;
+  overflow: auto;
+
+  &.drag-over {
+    background: #f0f4f8;
+    border-color: #667eea;
+  }
+}

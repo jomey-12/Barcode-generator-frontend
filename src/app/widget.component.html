@@ -1,0 +1,73 @@
+<div
+  class="dropped-widget"
+  [class.selected]="isSelected"
+  [style.left.px]="widget.left"
+  [style.top.px]="widget.top"
+  [style.width.px]="widget.width"
+  [style.height.px]="widget.height === 'auto' ? null : widget.height"
+  [style.height]="widget.height === 'auto' ? 'auto' : null"
+  (mousedown)="onMouseDown($event)"
+  (click)="onSelect($event)"
+>
+  <!-- Delete Button -->
+  <div class="delete-widget" (click)="onDelete($event)">×</div>
+
+  <!-- Separator Widget -->
+  <div *ngIf="widget.type === 'separator'" class="widget-separator"></div>
+
+  <!-- Barcode Widget -->
+  <div *ngIf="widget.type === 'barcode'" class="widget-barcode">
+    <div *ngIf="!widget.hasBarcode || !widget.productId">
+      📊 Barcode Placeholder<br><small>Configure properties to generate</small>
+    </div>
+    <svg
+      *ngIf="widget.hasBarcode && widget.productId"
+      [id]="'barcode-' + widget.id"
+      appBarcode
+      [productId]="widget.productId"
+    ></svg>
+  </div>
+
+  <!-- Image Widget -->
+  <div *ngIf="widget.type === 'image'" class="widget-image">
+    <div *ngIf="!widget.imageData">
+      🖼️ Image Placeholder<br>
+      <small>Click to upload image</small>
+      <button class="image-upload-btn" (click)="onImageUpload($event)">
+        Upload Image
+      </button>
+    </div>
+    <img
+      *ngIf="widget.imageData"
+      [src]="widget.imageData"
+      [alt]="widget.imageName"
+      (click)="onImageUpload($event)"
+      style="cursor: pointer"
+    >
+  </div>
+
+  <!-- Labeled Input Widget -->
+  <div
+    *ngIf="widget.type === 'labeled-input'"
+    class="labeled-input-container"
+    [class]="'position-' + widget.labelPosition"
+  >
+    <div
+      class="widget-label"
+      [class.hidden]="widget.hideLabel"
+    >
+      {{widget.labelText}}
+    </div>
+    <input
+      type="text"
+      class="widget-input"
+      placeholder="Enter value..."
+      [value]="widget.inputValue"
+      (input)="onInputChange($event)"
+      (click)="$event.stopPropagation()"
+    >
+  </div>
+
+  <!-- Resize Handle -->
+  <div class="resize-handle" (mousedown)="onResizeStart($event)"></div>
+</div>

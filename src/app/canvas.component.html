@@ -1,0 +1,23 @@
+<div class="canvas-container">
+  <div
+    class="canvas"
+    [class.drag-over]="isDragOver"
+    (drop)="onDrop($event)"
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave($event)"
+    (click)="deselectWidget.emit()"
+  >
+    <app-widget
+      *ngFor="let widget of widgets; trackBy: trackByWidgetId"
+      [widget]="widget"
+      [isSelected]="selectedWidget?.id === widget.id"
+      (widgetSelect)="widgetSelect.emit($event)"
+      (widgetDelete)="widgetDelete.emit($event)"
+      (widgetMove)="widgetMove.emit($event)"
+      (widgetResize)="widgetResize.emit($event)"
+      (imageUpload)="imageUpload.emit($event)"
+
+    ></app-widget>
+
+  </div>
+</div>

@@ -1,0 +1,48 @@
+<div class="widgets-panel">
+  <h3>📦 Widgets</h3>
+  <div
+    class="widget-item"
+    draggable="true"
+    (dragstart)="onDragStart('labeled-input', $event)"
+  >
+    🏷️ Labeled Input
+  </div>
+  <div
+    class="widget-item"
+    draggable="true"
+    (dragstart)="onDragStart('barcode', $event)"
+  >
+    📊 Barcode
+  </div>
+  <div
+    class="widget-item"
+    draggable="true"
+    (dragstart)="onDragStart('image', $event)"
+  >
+    🖼️ Image
+  </div>
+  <div
+    class="widget-item"
+    draggable="true"
+    (dragstart)="onDragStart('separator', $event)"
+  >
+    ➖ Separator Line
+  </div>
+
+  <h3 class="templates-title">📚 Saved Templates</h3>
+  <div class="templates-list">
+    <div
+      *ngFor="let template of templates"
+      class="template-item"
+      (click)="loadTemplate.emit(template)"
+    >
+      <span>{{template.name}}</span>
+      <button
+        class="btn btn-danger"
+        (click)="onDeleteTemplate(template, $event)"
+      >
+        Delete
+      </button>
+    </div>
+  </div>
+</div>

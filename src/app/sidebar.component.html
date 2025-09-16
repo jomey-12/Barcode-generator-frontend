@@ -1,0 +1,11 @@
+<!-- sidebar.component.html -->
+<div class="sidebar">
+  <div
+    class="widget-item"
+    *ngFor="let widgetType of widgetTypes"
+    cdkDrag
+    [cdkDragData]="widgetType"
+  >
+    {{ widgetType }}
+  </div>
+</div>
