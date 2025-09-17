@@ -8,8 +8,8 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-widget',
   templateUrl: './widget.component.html',
-  standalone:true,
-  imports:[CommonModule, BarcodeDirective, DragDropModule, FormsModule],
+  standalone: true,
+  imports: [CommonModule, BarcodeDirective, DragDropModule, FormsModule],
   styleUrls: ['./widget.component.scss']
 })
 export class WidgetComponent implements AfterViewInit {
@@ -18,9 +18,18 @@ export class WidgetComponent implements AfterViewInit {
 
   @Output() widgetSelect = new EventEmitter<Widget>();
   @Output() widgetDelete = new EventEmitter<Widget>();
-  @Output() widgetMove = new EventEmitter<{widget: Widget, left: number, top: number}>();
-  @Output() widgetResize = new EventEmitter<{widget: Widget, width: number, height: number | 'auto'}>();
-  @Output() imageUpload = new EventEmitter<{widget: Widget, imageData: string, imageName: string}>();
+  @Output() widgetMove = new EventEmitter<{ widget: Widget, left: number, top: number }>();
+  @Output() widgetResize = new EventEmitter<{ widget: Widget, width: number, height: number | 'auto' }>();
+  @Output() imageUpload = new EventEmitter<{ widget: Widget, imageData: string, imageName: string }>();
+
+  resizeDirection: string = '';
+  isResizing: boolean = false;
+  startX = 0;
+  startY = 0;
+  startWidth = 0;
+  startHeight = 0;
+  startLeft = 0;
+  startTop = 0;
 
   constructor(private elementRef: ElementRef) {}
 
@@ -44,9 +53,9 @@ export class WidgetComponent implements AfterViewInit {
 
   onMouseDown(event: MouseEvent) {
     if (event.target instanceof Element &&
-        (event.target.closest('.delete-widget') ||
-         event.target.closest('.image-upload-btn') ||
-         event.target.closest('.resize-handle'))) {
+      (event.target.closest('.delete-widget') ||
+        event.target.closest('.image-upload-btn') ||
+        event.target.closest('.resize-handle'))) {
       return;
     }
 
@@ -71,31 +80,87 @@ export class WidgetComponent implements AfterViewInit {
     document.addEventListener('mouseup', onMouseUp);
   }
 
-  onResizeStart(event: MouseEvent) {
+  onResizeStart(event: MouseEvent, direction: string) {
     event.preventDefault();
     event.stopPropagation();
 
-    const startX = event.clientX;
-    const startY = event.clientY;
-    const startWidth = this.widget.width;
-    const startHeight = this.widget.height;
+    this.resizeDirection = direction;
+    this.isResizing = true;
+    this.startX = event.clientX;
+    this.startY = event.clientY;
+    this.startWidth = this.widget.width;
+    this.startHeight = typeof this.widget.height === 'number'
+      ? this.widget.height
+      : this.elementRef.nativeElement.offsetHeight; // fallback to actual DOM height
+    this.startLeft = this.widget.left;
+    this.startTop = this.widget.top;
 
-    const onMouseMove = (e: MouseEvent) => {
-      const newWidth = Math.max(50, startWidth + (e.clientX - startX));
-      const newHeight = this.widget.type === 'image' && typeof startHeight === 'number'
-        ? Math.max(50, startHeight + (e.clientY - startY))
-        : startHeight;
-
-      this.widgetResize.emit({ widget: this.widget, width: newWidth, height: newHeight });
-    };
-
+    const onMouseMove = (e: MouseEvent) => this.resizeHandler(e);
     const onMouseUp = () => {
+      this.isResizing = false;
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
     };
 
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
+  }
+
+  private resizeHandler(event: MouseEvent) {
+    if (!this.isResizing) return;
+
+    const dx = event.clientX - this.startX;
+    const dy = event.clientY - this.startY;
+    const minWidth = 50;
+    const minHeight = 50;
+
+    switch (this.resizeDirection) {
+      case 'right':
+        this.widget.width = Math.max(minWidth, this.startWidth + dx);
+        break;
+      case 'bottom':
+        this.widget.height = Math.max(minHeight, this.startHeight + dy);
+        break;
+      case 'left':
+        this.widget.width = Math.max(minWidth, this.startWidth - dx);
+        this.widget.left = this.startLeft + dx;
+        break;
+      case 'top':
+        this.widget.height = Math.max(minHeight, this.startHeight - dy);
+        this.widget.top = this.startTop + dy;
+        break;
+      case 'bottom-right':
+        this.widget.width = Math.max(minWidth, this.startWidth + dx);
+        this.widget.height = Math.max(minHeight, this.startHeight + dy);
+        break;
+      case 'bottom-left':
+        this.widget.width = Math.max(minWidth, this.startWidth - dx);
+        this.widget.left = this.startLeft + dx;
+        this.widget.height = Math.max(minHeight, this.startHeight + dy);
+        break;
+      case 'top-right':
+        this.widget.width = Math.max(minWidth, this.startWidth + dx);
+        this.widget.height = Math.max(minHeight, this.startHeight - dy);
+        this.widget.top = this.startTop + dy;
+        break;
+      case 'top-left':
+        this.widget.width = Math.max(minWidth, this.startWidth - dx);
+        this.widget.left = this.startLeft + dx;
+        this.widget.height = Math.max(minHeight, this.startHeight - dy);
+        this.widget.top = this.startTop + dy;
+        break;
+    }
+
+    // Ensure widget.height is always numeric while resizing
+    if (this.widget.height === 'auto') {
+      this.widget.height = this.startHeight;
+    }
+
+    this.widgetResize.emit({
+      widget: this.widget,
+      width: this.widget.width,
+      height: this.widget.height
+    });
   }
 
   onImageUpload(event: Event) {

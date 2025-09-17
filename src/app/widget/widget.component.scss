@@ -148,30 +148,12 @@
     right: -5px;
     width: 10px;
     height: 10px;
-    background: #667eea;
+    // background: #667eea;
     cursor: nwse-resize;
     border-radius: 2px;
   }
 }
 
-// .labeled-input-container {
-//   display: flex;          /* arrange children in a row */
-//   align-items: center;    /* vertical centering */
-//   width: 100%;            /* stretch with widget */
-//   height: 100%;           /* optional, if you want it to fill */
-// }
-
-// .widget-label {
-//   width: 30%;             /* fixed ratio */
-//   min-width: 0;           /* prevents overflow */
-//   box-sizing: border-box;
-// }
-
-// .widget-input {
-//   width: 70%;             /* fixed ratio */
-//   min-width: 0;
-//   box-sizing: border-box; /* ensures padding/border don't break ratio */
-// }
 
 @keyframes fadeIn {
   from {
@@ -196,53 +178,22 @@
   position: absolute;
   width: 10px;
   height: 10px;
-  background: transparent;  /* can make visible for testing */
+  //background: #007bff;
+  border-radius: 50%;
+  z-index: 10;
+  cursor: pointer;
 }
 
-/* Sides */
-.resize-handle-top {
-  top: -5px;
-  left: 50%;
-  cursor: n-resize;
-  transform: translateX(-50%);
-}
-.resize-handle-bottom {
-  bottom: -5px;
-  left: 50%;
-  cursor: s-resize;
-  transform: translateX(-50%);
-}
-.resize-handle-left {
-  left: -5px;
-  top: 50%;
-  cursor: w-resize;
-  transform: translateY(-50%);
-}
-.resize-handle-right {
-  right: -5px;
-  top: 50%;
-  cursor: e-resize;
-  transform: translateY(-50%);
-}
+.resize-handle-top-left { top: -5px; left: -5px; cursor: nwse-resize; }
+.resize-handle-top-right { top: -5px; right: -5px; cursor: nesw-resize; }
+.resize-handle-bottom-left { bottom: -5px; left: -5px; cursor: nesw-resize; }
+.resize-handle-bottom-right { bottom: -5px; right: -5px; cursor: nwse-resize; }
 
-/* Corners */
-.resize-handle-top-left {
-  top: -5px;
-  left: -5px;
-  cursor: nw-resize;
-}
-.resize-handle-top-right {
-  top: -5px;
-  right: -5px;
-  cursor: ne-resize;
-}
-.resize-handle-bottom-left {
-  bottom: -5px;
-  left: -5px;
-  cursor: sw-resize;
-}
-.resize-handle-bottom-right {
-  bottom: -5px;
-  right: -5px;
-  cursor: se-resize;
+.resize-handle-top { top: -5px; left: 50%; transform: translateX(-50%); cursor: ns-resize; }
+.resize-handle-bottom { bottom: -5px; left: 50%; transform: translateX(-50%); cursor: ns-resize; }
+.resize-handle-left { top: 50%; left: -5px; transform: translateY(-50%); cursor: ew-resize; }
+.resize-handle-right { top: 50%; right: -5px; transform: translateY(-50%); cursor: ew-resize; }
+
+.resize-handle {
+  z-index: 100; /* higher than buttons, input, labels */
 }

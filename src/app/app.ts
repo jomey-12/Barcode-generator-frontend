@@ -7,6 +7,7 @@ import { CanvasComponent } from './canvas/canvas.component';
 import { HeaderComponent } from './header/header.component';
 import { PropertiesPanelComponent } from './properties-panel/properties-panel.component';
 import { WidgetsPanelComponent } from './widgets-panel/widgets-panel.component';
+import { SaveTemplateDialogComponent } from './save-template-dialog/save-template-dialog.component';
 
 @Component({
   selector: 'app-root',
@@ -18,6 +19,7 @@ import { WidgetsPanelComponent } from './widgets-panel/widgets-panel.component';
     HeaderComponent,
     WidgetsPanelComponent,
     CanvasComponent,
+    SaveTemplateDialogComponent,
     PropertiesPanelComponent],
   styleUrls: ['./app.scss']
 })
@@ -58,6 +60,7 @@ export class AppComponent implements OnInit {
       this.widgets.push(newWidget);
       this.draggedWidgetType = null;
     }
+    this.updateJsonPreview();
   }
 
   createWidget(type: WidgetType, position: { x: number; y: number }, savedData?: Partial<Widget>): Widget {
@@ -71,7 +74,7 @@ export class AppComponent implements OnInit {
       // Common properties
       content: savedData?.content || '',
       // Labeled input properties
-      labelText: savedData?.labelText || 'Label:',
+      labelText: savedData?.labelText || 'Label',
       inputValue: savedData?.inputValue || '',
       hideLabel: savedData?.hideLabel || false,
       labelPosition: savedData?.labelPosition || 'left',
@@ -172,7 +175,7 @@ export class AppComponent implements OnInit {
       });
     }
   }
-
+showSaveDialog = false;
   saveTemplate() {
     const template: Template = {
       id: Date.now(),
@@ -180,10 +183,30 @@ export class AppComponent implements OnInit {
       widgets: [...this.widgets],
       createdAt: new Date().toISOString()
     };
-
+   // this.showSaveDialog = true;
     this.templates = this.templateService.saveTemplate(template);
-    alert('Template saved successfully!');
+    alert('Template saved successfully! hihiihihihih');
+    this.showSaveDialog =false;
   }
+  
+
+openSaveDialog() {
+  this.showSaveDialog = true;
+}
+
+handleSave(name: string) {
+  this.showSaveDialog = false;
+
+  const template: Template = {
+    id: Date.now(),
+    name,
+    widgets: [...this.widgets],
+    createdAt: new Date().toISOString()
+  };
+
+  this.templates = this.templateService.saveTemplate(template);
+  alert('Template saved successfully!');
+}
 
   loadTemplate(template: Template) {
     this.templateName = template.name;
@@ -220,25 +243,26 @@ export class AppComponent implements OnInit {
   }
 
   updateJsonPreview() {
-    const labeledInputs = this.widgets.filter(w => w.type === 'labeled-input');
-    const jsonData: any = {
-      productId: this.selectedWidget?.productId || '',
-      timestamp: new Date().toISOString()
-    };
+  const labeledInputs = this.widgets.filter(w => w.type === 'labeled-input');
+  const jsonData: any = {
+    productId: this.selectedWidget?.productId || '',
+    timestamp: new Date().toISOString()
+  };
 
-    labeledInputs.forEach(widget => {
-      if (widget.labelText && widget.inputValue) {
-        jsonData[widget.labelText] = widget.inputValue;
-      }
-    });
+  labeledInputs.forEach(widget => {
+    if (widget.labelText) {
+      jsonData[widget.labelText] = widget.inputValue ?? null;
+    }
+  });
 
-    // Remove empty values except productId and timestamp
-    Object.keys(jsonData).forEach(key => {
-      if (!jsonData[key] && key !== 'productId' && key !== 'timestamp') {
-        delete jsonData[key];
-      }
-    });
+  // Only remove undefined (not null/empty string)
+  Object.keys(jsonData).forEach(key => {
+    if (jsonData[key] === undefined && key !== 'productId' && key !== 'timestamp') {
+      delete jsonData[key];
+    }
+  });
 
-    this.jsonPreview = JSON.stringify(jsonData, null, 2);
-  }
+  this.jsonPreview = JSON.stringify(jsonData, null, 2);
+}
+
 }

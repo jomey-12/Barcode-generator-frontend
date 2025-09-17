@@ -18,6 +18,7 @@ export class PropertiesPanelComponent {
   @Output() clearBarcode = new EventEmitter<void>();
   @Output() imageUpload = new EventEmitter<{widget: Widget, imageData: string, imageName: string}>();
 
+  showSuccess = false;
   onPropertyChange(property: string, value: any) {
     if (this.selectedWidget) {
       const updates: Partial<Widget> = {};
@@ -25,6 +26,25 @@ export class PropertiesPanelComponent {
       this.widgetUpdate.emit({ widget: this.selectedWidget, updates });
     }
   }
+successTimeout: any;
+
+saveProductDetails() {
+  // ... save logic ...
+
+  this.showSuccess = true;
+
+  // Clear any existing timeout
+  if (this.successTimeout) {
+    clearTimeout(this.successTimeout);
+  }
+
+  // Start a fresh timeout
+  this.successTimeout = setTimeout(() => {
+    this.showSuccess = false;
+    this.successTimeout = null;
+  }, 4000);
+}
+
 
   onImageUpload() {
     if (!this.selectedWidget) return;

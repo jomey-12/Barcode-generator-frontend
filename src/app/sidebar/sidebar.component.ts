@@ -29,7 +29,7 @@ export class SidebarComponent {
       left: 50,
       width: 150,
       height: 50,
-      ...(type === 'labeled-input' ? { label: 'Label:' } : {}),
+      ...(type === 'labeled-input' ? { label: 'Label' } : {}),
       ...(type === 'barcode' ? { productId: '123456789' } : {}),
       ...(type === 'image' ? { src: '' } : {})
     };

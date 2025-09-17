@@ -23,10 +23,10 @@
       🔄 Generate Barcode
     </button>
     
-    <div class="property-group">
+    <!-- <div class="property-group json-data">
       <label>Generated JSON Preview</label>
       <div class="json-preview">{{jsonPreview}}</div>
-    </div>
+    </div> -->
     
     <button
       *ngIf="selectedWidget.hasBarcode"
@@ -99,3 +99,17 @@
     </div>
   </div>
 </div>
+
+    <div class="property-group json-data">
+      <label>Product Details</label>
+      <div class="json-preview">{{jsonPreview}}</div>
+          <button class="btn btn-primary full-width" (click)="saveProductDetails()">
+      Save Product Details
+    </button>
+    <!-- success message -->
+     
+    
+<div *ngIf="showSuccess" class="success-message">
+  ✅ Template saved successfully!
+</div>
+    </div>

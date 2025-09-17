@@ -1,0 +1,17 @@
+<div class="dialog-backdrop" (click)="close()"></div>
+<div class="dialog">
+  <div class="dialog-header">
+    <h3>💾 Save Template</h3>
+    <button class="close-btn" (click)="close()">✖</button>
+  </div>
+
+  <div class="dialog-body">
+    <label for="templateName">Template Name</label>
+    <input id="templateName" [(ngModel)]="name" placeholder="Enter template name..." />
+  </div>
+
+  <div class="dialog-actions">
+    <button class="btn btn-secondary" (click)="close()">Cancel</button>
+    <button class="btn btn-primary" (click)="onSave()">Save</button>
+  </div>
+</div>

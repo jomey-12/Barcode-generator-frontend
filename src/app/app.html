@@ -1,11 +1,19 @@
 <div class="template-creator">
-  <app-header 
-    [templateName]="templateName"
-    (templateNameChange)="templateName = $event"
-    (saveTemplate)="saveTemplate()"
-    (clearCanvas)="clearCanvas()"
-    (exportTemplate)="exportTemplate()">
-  </app-header>
+<app-header 
+  [templateName]="templateName"
+  (templateNameChange)="templateName = $event"
+  (saveTemplate)="openSaveDialog()"
+  (clearCanvas)="clearCanvas()"
+  (exportTemplate)="exportTemplate()">
+</app-header>
+
+<app-save-template-dialog
+  *ngIf="showSaveDialog"
+  [name]="templateName"
+  (saveClicked)="handleSave($event)"
+  (cancel)="showSaveDialog = false">
+</app-save-template-dialog>
+
 
   <div class="main-content">
     <app-widgets-panel
