@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { Widget } from './template.model';
+import { Widget } from '../models/template.model';
 import { CommonModule } from '@angular/common';
 
 @Component({

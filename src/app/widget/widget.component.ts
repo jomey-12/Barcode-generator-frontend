@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter, AfterViewInit, ElementRef } from '@angular/core';
-import { Widget } from './template.model';
+import { Widget } from '../models/template.model';
 import { CommonModule } from '@angular/common';
-import { BarcodeDirective } from './directives/barcode.directive';
+import { BarcodeDirective } from '../directives/barcode.directive';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { FormsModule } from '@angular/forms';
 

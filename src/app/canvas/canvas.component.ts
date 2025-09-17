@@ -1,9 +1,9 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { Widget, WidgetType } from './template.model';
+import { Widget, WidgetType } from '../models/template.model';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import { WidgetComponent } from './widget.component';
+import { WidgetComponent } from '../widget/widget.component';
 
 @Component({
   selector: 'app-canvas',

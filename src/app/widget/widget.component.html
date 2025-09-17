@@ -21,6 +21,7 @@
       📊 Barcode Placeholder<br><small>Configure properties to generate</small>
     </div>
     <svg
+    class="barcode-svg"
       *ngIf="widget.hasBarcode && widget.productId"
       [id]="'barcode-' + widget.id"
       appBarcode
@@ -38,6 +39,7 @@
       </button>
     </div>
     <img
+      class="image-upload"
       *ngIf="widget.imageData"
       [src]="widget.imageData"
       [alt]="widget.imageName"
@@ -59,13 +61,15 @@
       {{widget.labelText}}
     </div>
     <input
-      type="text"
-      class="widget-input"
-      placeholder="Enter value..."
-      [value]="widget.inputValue"
-      (input)="onInputChange($event)"
-      (click)="$event.stopPropagation()"
-    >
+  type="text"
+  class="widget-input"
+  placeholder="Enter value..."
+  [value]="widget.inputValue"
+  (input)="onInputChange($event)"
+  (click)="$event.stopPropagation()"
+  [style.width.%]="100"
+/>
+
   </div>
 
   <!-- Resize Handle -->

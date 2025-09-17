@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { Widget, Template, WidgetType } from './template.model';
-import { TemplateService } from './template.service';
+import { Widget, Template, WidgetType } from './models/template.model';
+import { TemplateService } from './service/template.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { CanvasComponent } from './canvas.component';
-import { HeaderComponent } from './header.component';
-import { PropertiesPanelComponent } from './properties-panel.component';
-import { WidgetsPanelComponent } from './widgets-panel.component';
+import { CanvasComponent } from './canvas/canvas.component';
+import { HeaderComponent } from './header/header.component';
+import { PropertiesPanelComponent } from './properties-panel/properties-panel.component';
+import { WidgetsPanelComponent } from './widgets-panel/widgets-panel.component';
 
 @Component({
   selector: 'app-root',
@@ -216,7 +216,7 @@ export class AppComponent implements OnInit {
       createdAt: new Date().toISOString()
     };
 
-    this.templateService.exportTemplate(template, this.templateName);
+    this.templateService.exportTemplate( this.templateName);
   }
 
   updateJsonPreview() {
