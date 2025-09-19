@@ -86,7 +86,7 @@
     </div>
     
     <div class="property-group">
-      <label>Text Field Position (relative to label)</label>
+      <label>Label Position (relative to input field)</label>
       <select
         [value]="selectedWidget.labelPosition"
         (change)="onPropertyChange('labelPosition', $any($event.target).value)"
@@ -110,6 +110,6 @@
      
     
 <div *ngIf="showSuccess" class="success-message">
-  ✅ Template saved successfully!
+  ✅ Product details saved successfully!
 </div>
     </div>

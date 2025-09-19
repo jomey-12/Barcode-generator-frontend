@@ -1,5 +1,6 @@
 <div
   class="dropped-widget"
+  id="dropped-widget"
   [class.selected]="isSelected"
   [style.left.px]="widget.left"
   [style.top.px]="widget.top"
@@ -32,7 +33,7 @@
   <!-- Image Widget -->
   <div *ngIf="widget.type === 'image'" class="widget-image">
     <div *ngIf="!widget.imageData">
-      🖼️ Image Placeholder<br>
+       Image Placeholder<br>
       <small>Click to upload image</small>
       <button class="image-upload-btn" (click)="onImageUpload($event)">
         Upload Image
@@ -52,6 +53,7 @@
   <div
     *ngIf="widget.type === 'labeled-input'"
     class="labeled-input-container"
+    id="labeled-input-container"
     [class]="'position-' + widget.labelPosition"
   >
     <div
@@ -62,13 +64,12 @@
     </div>
    
  <textarea
+ id="textarea"
   type="text"
   class="widget-input"
-  placeholder="Enter value..."
   [value]="widget.inputValue"
   (input)="onInputChange($event)"
   (click)="$event.stopPropagation()"
-  [style.width.%]="100"
 ></textarea>
   </div>
 

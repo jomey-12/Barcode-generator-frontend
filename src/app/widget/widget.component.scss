@@ -197,3 +197,25 @@
 .resize-handle {
   z-index: 100; /* higher than buttons, input, labels */
 }
+
+
+// .widget-input{
+//   margin-top: 16px;
+// }
+
+// /* when container has position-left, style widget-label */
+// .labeled-input-container.position-left .widget-label {
+//   margin-top: 8px; /* or whatever value you need */
+// }
+
+// /* when container has position-left, style widget-label */
+// .labeled-input-container.position-right .widget-label {
+//   margin-top: 8px; /* or whatever value you need */
+// }
+
+.position-left .position-right{
+textarea{
+  margin-top: 16px;
+}
+
+}

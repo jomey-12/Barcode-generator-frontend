@@ -50,27 +50,41 @@ exportTemplate(templateName: string) {
     return;
   }
 
-  html2canvas(element).then(canvas => {
-    const imgData = canvas.toDataURL('image/png');
+const canvasElement = document.getElementById('canvas') as HTMLElement;
+const inputElement = document.getElementById('textarea') as HTMLElement;
 
-    const pdf = new jsPDF({
-      orientation: 'p', // portrait
-      unit: 'pt',       // points
-      format: 'a4'      // page size
-    });
+  // Save original border style
+  const originalBorder = canvasElement.style.border;
+  let inputElementOriginalBorder: string;
+  if(inputElement){
+     inputElementOriginalBorder = inputElement.style.border;
+  }
+
+  // Remove border before capture
+  canvasElement.style.border = 'none';
+  if(inputElement){
+    inputElement.style.setProperty('border', 'none', 'important');
+  }
+
+  html2canvas(element).then(canvas => {
+    // Restore border after capture
+    canvasElement.style.border = originalBorder;
+    if(inputElement){
+      inputElement.style.border = inputElementOriginalBorder;
+    }
+
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF({ orientation: 'p', unit: 'pt', format: 'a4' });
 
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
-
     const imgWidth = pageWidth;
     const imgHeight = (canvas.height * pageWidth) / canvas.width;
 
     let position = 0;
 
-    // If content height is bigger than one page, split into multiple pages
     if (imgHeight > pageHeight) {
       let heightLeft = imgHeight;
-
       pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
       heightLeft -= pageHeight;
 
@@ -90,4 +104,5 @@ exportTemplate(templateName: string) {
     pdf.save(exportFileDefaultName);
   });
 }
+
 }
