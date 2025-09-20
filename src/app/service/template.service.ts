@@ -1,14 +1,15 @@
-import { Injectable } from '@angular/core';
-import { Template } from '../models/template.model';
+import { Injectable, signal, WritableSignal } from '@angular/core';
+import { Template, Widget } from '../models/template.model';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+declare var JsBarcode: any;
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class TemplateService {
   private readonly STORAGE_KEY = 'templates';
-
+  public widgets: WritableSignal<Widget[]> = signal<Widget[]>([]);
   getTemplates(): Template[] {
     try {
       return JSON.parse(localStorage.getItem(this.STORAGE_KEY) || '[]');
@@ -40,7 +41,7 @@ export class TemplateService {
 
   deleteTemplate(templateId: number): Template[] {
     const templates = this.getTemplates();
-    const filteredTemplates = templates.filter(t => t.id !== templateId);
+    const filteredTemplates = templates.filter((t) => t.id !== templateId);
     localStorage.setItem(this.STORAGE_KEY, JSON.stringify(filteredTemplates));
     return filteredTemplates;
   }
@@ -56,8 +57,8 @@ export class TemplateService {
   //   linkElement.click();
   // }
 
-exportTemplate(templateName: string) {
-  const element = document.getElementById('canvas-container');
+  exportTemplate(templateName: string) {
+    const element = document.getElementById('canvas-container');
 
   if (!element) {
     console.error('Template canvas not found');
