@@ -30,6 +30,8 @@ export interface Widget {
   // Style properties
   fontSize?: string;
   fontWeight?: string;
+  //separator properties
+  orientation?: string
 }
 
 export interface Template {

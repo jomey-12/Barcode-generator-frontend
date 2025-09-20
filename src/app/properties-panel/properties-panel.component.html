@@ -52,6 +52,21 @@
     </div>
   </div>
 
+    <!-- Separator Properties -->
+  <div *ngIf="selectedWidget && selectedWidget.type === 'separator'" class="widget-properties">
+    <h4>Widget: Separator Line</h4>
+    
+<div class="property-group">
+  <label for="line-orientation">Line Orientation:</label>
+<select id="line-orientation"
+        [value]="selectedWidget.orientation"
+        (change)="onOrientationChange($event)">
+  <option value="horizontal">Horizontal</option>
+  <option value="vertical">Vertical</option>
+</select>
+</div>
+  </div>
+
   <!-- Labeled Input Properties -->
   <div *ngIf="selectedWidget && selectedWidget.type === 'labeled-input'" class="widget-properties">
     <h4>Widget: Labeled Input</h4>
