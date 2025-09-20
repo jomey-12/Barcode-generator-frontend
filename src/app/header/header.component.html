@@ -10,7 +10,7 @@
       </button>
     </div>
 
-    <p class="template-name">{{ templateName }}</p>
+    <p class="template-name" *ngIf="templateName !== ''">Current Template: {{ templateName }}</p>
 
     <div class="right-buttons">
       <button class="btn btn-secondary" (click)="exportTemplate.emit()">
