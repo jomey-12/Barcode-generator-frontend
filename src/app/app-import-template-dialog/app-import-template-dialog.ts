@@ -83,7 +83,7 @@ export class ImportTemplateDialogComponent {
   }
 
   selectedImages: File[] = [];
-  imageMapping: 'sequential' | 'filename' = 'sequential';
+  imageMapping: 'sequential' | 'filename' = 'filename';
   showImageUpload = false;
 
   // Add this method to your existing component
@@ -99,7 +99,7 @@ export class ImportTemplateDialogComponent {
       if (data.length > 0) {
         this.headerLabels = data[0];
         this.previewData = data.slice(1);
-        this.showImageUpload = true; // Show image upload section
+        this.showImageUpload = !!this.selectedFile && this.headerLabels.some((label) => label.includes("image")); // Show image upload section
         
         // Auto-detect image columns
         this.headerLabels.forEach(header => {
@@ -167,49 +167,49 @@ export class ImportTemplateDialogComponent {
   }
 
   // Add this method to map images to rows
-  private async mapImagesToRows() {
-    const imageColumns = this.headerLabels
-      .map((header, index) => ({ header, index }))
-      .filter(item => this.imageColumnMappings[item.header]);
+  // private async mapImagesToRows() {
+  //   const imageColumns = this.headerLabels
+  //     .map((header, index) => ({ header, index }))
+  //     .filter(item => this.imageColumnMappings[item.header]);
 
-    if (this.imageMapping === 'sequential') {
-      // Sequential mapping: distribute images across rows and columns
-      let imageIndex = 0;
+  //   if (this.imageMapping === 'sequential') {
+  //     // Sequential mapping: distribute images across rows and columns
+  //     let imageIndex = 0;
       
-      for (let rowIndex = 0; rowIndex < this.previewData.length; rowIndex++) {
-        const row = this.previewData[rowIndex];
+  //     for (let rowIndex = 0; rowIndex < this.previewData.length; rowIndex++) {
+  //       const row = this.previewData[rowIndex];
         
-        for (const { index: colIndex } of imageColumns) {
-          if (imageIndex < this.selectedImages.length) {
-            const base64 = await this.fileToBase64(this.selectedImages[imageIndex]);
-            row[colIndex] = base64;
-            imageIndex++;
-          }
-        }
+  //       for (const { index: colIndex } of imageColumns) {
+  //         if (imageIndex < this.selectedImages.length) {
+  //           const base64 = await this.fileToBase64(this.selectedImages[imageIndex]);
+  //           row[colIndex] = base64;
+  //           imageIndex++;
+  //         }
+  //       }
         
-        if (imageIndex >= this.selectedImages.length) break;
-      }
-    } else {
-      // Filename matching: match image names to product data
-      for (let rowIndex = 0; rowIndex < this.previewData.length; rowIndex++) {
-        const row = this.previewData[rowIndex];
-        const productName = row[0]?.toString().toLowerCase() || '';
-        const productId = row[1]?.toString().toLowerCase() || '';
+  //       if (imageIndex >= this.selectedImages.length) break;
+  //     }
+  //   } else {
+  //     // Filename matching: match image names to product data
+  //     for (let rowIndex = 0; rowIndex < this.previewData.length; rowIndex++) {
+  //       const row = this.previewData[rowIndex];
+  //       const productName = row[0]?.toString().toLowerCase() || '';
+  //       const productId = row[1]?.toString().toLowerCase() || '';
         
-        let matchedImages = this.selectedImages.filter(img => {
-          const filename = img.name.toLowerCase();
-          return filename.includes(productName) || 
-                 filename.includes(productId);
-        });
+  //       let matchedImages = this.selectedImages.filter(img => {
+  //         const filename = img.name.toLowerCase();
+  //         return filename.includes(productName) || 
+  //                filename.includes(productId);
+  //       });
 
-        // Assign matched images to this row's image columns
-        for (let i = 0; i < Math.min(matchedImages.length, imageColumns.length); i++) {
-          const base64 = await this.fileToBase64(matchedImages[i]);
-          row[imageColumns[i].index] = base64;
-        }
-      }
-    }
-  }
+  //       // Assign matched images to this row's image columns
+  //       for (let i = 0; i < Math.min(matchedImages.length, imageColumns.length); i++) {
+  //         const base64 = await this.fileToBase64(matchedImages[i]);
+  //         row[imageColumns[i].index] = base64;
+  //       }
+  //     }
+  //   }
+  // }
 
   // Add this helper method
   private async fileToBase64(file: File): Promise<string> {
@@ -261,4 +261,83 @@ export class ImportTemplateDialogComponent {
     });
     return count;
   }
+
+// Replace the filename matching section with this direct approach
+
+private async mapImagesToRows() {
+  const imageColumns = this.headerLabels
+    .map((header, index) => ({ header, index }))
+    .filter(item => this.imageColumnMappings[item.header]);
+
+  if (this.imageMapping === 'sequential') {
+    // Sequential mapping: distribute images across rows and columns
+    let imageIndex = 0;
+    
+    for (let rowIndex = 0; rowIndex < this.previewData.length; rowIndex++) {
+      const row = this.previewData[rowIndex];
+      
+      for (const { index: colIndex } of imageColumns) {
+        if (imageIndex < this.selectedImages.length) {
+          const base64 = await this.fileToBase64(this.selectedImages[imageIndex]);
+          row[colIndex] = base64;
+          imageIndex++;
+        }
+        
+        if (imageIndex >= this.selectedImages.length) break;
+      }
+      
+      if (imageIndex >= this.selectedImages.length) break;
+    }
+  } else {
+    // Direct filename matching to image column values
+    for (let rowIndex = 0; rowIndex < this.previewData.length; rowIndex++) {
+      const row = this.previewData[rowIndex];
+      
+      // Check each image column for filename references
+      for (const { header, index: colIndex } of imageColumns) {
+        const expectedFilename = row[colIndex]?.toString().trim();
+        
+        if (expectedFilename && expectedFilename !== '') {
+          // Find matching uploaded file
+          const matchingFile = this.findFileByName(expectedFilename);
+          
+          if (matchingFile) {
+            const base64 = await this.fileToBase64(matchingFile);
+            row[colIndex] = base64;
+            console.log(`Mapped ${matchingFile.name} to row ${rowIndex + 1}, column ${header}`);
+          } else {
+            console.warn(`No uploaded file matches "${expectedFilename}" for row ${rowIndex + 1}, column ${header}`);
+          }
+        }
+      }
+    }
+  }
+}
+
+// Find uploaded file that matches the expected filename
+private findFileByName(expectedFilename: string): File | null {
+  const expected = expectedFilename.toLowerCase().trim();
+  
+  // Try exact match first (with and without extension)
+  const exactMatch = this.selectedImages.find(file => {
+    const fileName = file.name.toLowerCase();
+    const fileNameNoExt = fileName.replace(/\.[^/.]+$/, "");
+    const expectedNoExt = expected.replace(/\.[^/.]+$/, "");
+    
+    return fileName === expected || 
+           fileNameNoExt === expected || 
+           fileNameNoExt === expectedNoExt ||
+           fileName === expectedNoExt;
+  });
+  
+  if (exactMatch) return exactMatch;
+  
+  // Try partial match
+  const partialMatch = this.selectedImages.find(file => {
+    const fileName = file.name.toLowerCase();
+    return fileName.includes(expected) || expected.includes(fileName.replace(/\.[^/.]+$/, ""));
+  });
+  
+  return partialMatch || null;
+}
 }

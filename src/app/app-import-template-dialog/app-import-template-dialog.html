@@ -1,80 +1,133 @@
 <div class="dialog-overlay">
   <div class="dialog">
     <div class="dialog-header">
-      <h3>📥 Bulk Import Product details</h3>
+      <h3>Bulk Import Product details</h3>
       <button class="close-btn" (click)="close()">✖</button>
     </div>
 
     <div class="dialog-body">
-                <h4>Step 1: Upload product details spreadsheet for current template</h4>
+      <p class="warning">Please save the template or select existing template before proceeding.</p>
+      <p>Step 1: Upload product details spreadsheet for the current template
+              <a class="link" href="#" (click)="downloadSample()">
+          Download Sample .xlsx here
+        </a>
+      </p>
 
       <div class="top-action-grid">
-
-        <div class="left-section">
-          <button class="btn btn-primary" (click)="downloadSample()">Download Sample .xlsx</button>
-        </div>
-        <div class="right-section">
-            <input
-              type="file"
-              accept=".xlsx,.xls"
-              (change)="onFileSelect($event)"
-              #fileInput
-              hidden
-            />
-            <button class="btn btn-primary" (click)="fileInput.click()">Choose Excel File</button>
-          <div class="file-info" *ngIf="selectedFile">
-            Selected: {{ selectedFile.name }}
-          </div>
-        </div>
-      </div>
-
-      <div class="upload-section" *ngIf="showImageUpload">
-        <h4>Step 2: Upload Product Images</h4>
-
-        <div class="image-mapping-options">
-          <label class="radio-label">
-            <input
-              type="radio"
-              value="sequential"
-              name="imageMapping"
-              [(ngModel)]="imageMapping"
-            />
-            Sequential (assign images in order)
-          </label>
-          <label class="radio-label">
-            <input
-              type="radio"
-              value="filename"
-              name="imageMapping"
-              [(ngModel)]="imageMapping"
-            />
-            Filename matching (match names to products)
-          </label>
-        </div>
-
           <input
             type="file"
-            accept="image/*"
-            multiple
-            (change)="onImagesSelect($event)"
-            #imageInput
+            accept=".xlsx,.xls"
+            (change)="onFileSelect($event)"
+            #fileInput
             hidden
           />
-          <button class="btn btn-primary" (click)="imageInput.click()">Choose Multiple Images</button>
-
-
-        <div class="file-info" *ngIf="selectedImages && selectedImages.length > 0">
-          Selected: {{ selectedImages.length }} image{{ selectedImages.length > 1 ? 's' : '' }}
+          <button class="btn btn-primary choose-file" (click)="fileInput.click()">Choose Excel File</button>
+          <div class="file-info" *ngIf="selectedFile">Selected: {{ selectedFile.name }}</div>
         </div>
+
+      <div class="upload-section" *ngIf="showImageUpload">
+        <p>Step 2: Upload Product Images</p>
+        <p></p>
+
+        <div class="image-mapping-options">
+          <div class="tooltip-container">
+            <label class="radio-label">
+              <input type="radio" value="filename" name="imageMapping" [(ngModel)]="imageMapping" />
+              Filename matching
+            </label>
+            <div class="icon-button">
+              <button class="icon-btn" aria-describedby="tooltip">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <circle cx="10" cy="10" r="9" stroke="#333" stroke-width="2" fill="#f0f0f0" />
+                  <line
+                    x1="10"
+                    y1="6"
+                    x2="10"
+                    y2="12"
+                    stroke="#333"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  />
+                  <circle cx="10" cy="15" r="1" fill="#333" />
+                </svg>
+              </button>
+            </div>
+
+            <span class="custom-tooltip" role="tooltip" id="tooltip">
+              Provided file names in the spreadsheet correspond to the image files uploaded here
+              <span class="tooltip-arrow1"></span>
+            </span>
+          </div>
+          <div class="tooltip-container">
+            <label class="radio-label">
+              <input
+                type="radio"
+                value="sequential"
+                name="imageMapping"
+                [(ngModel)]="imageMapping"
+              />
+              Sequential
+            </label>
+
+            <div class="icon-button">
+              <button class="icon-btn" aria-describedby="tooltip">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <circle cx="10" cy="10" r="9" stroke="#333" stroke-width="2" fill="#f0f0f0" />
+                  <line
+                    x1="10"
+                    y1="6"
+                    x2="10"
+                    y2="12"
+                    stroke="#333"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  />
+                  <circle cx="10" cy="15" r="1" fill="#333" />
+                </svg>
+              </button>
+            </div>
+            <span class="custom-tooltip custom-tooltip2" role="tooltip" id="tooltip2">
+              Assign images in order of uploading
+              <span class="tooltip-arrow2"></span>
+            </span>
+          </div>
+        </div>
+
+        <input
+          type="file"
+          accept="image/*"
+          multiple
+          (change)="onImagesSelect($event)"
+          #imageInput
+          hidden
+        />
+        <div class="upload-image">
+          <button class="btn btn-primary choose-file" (click)="imageInput.click()">Choose Multiple Images</button>
+          <div class="file-info" *ngIf="selectedImages && selectedImages.length > 0">
+            Selected: {{ selectedImages.length }} image{{ selectedImages.length > 1 ? 's' : '' }}
+          </div>
+        </div>
+        
       </div>
-
-      <div class="preview-section" *ngIf="previewData.length > 0">
-        <h4>Preview Data</h4>
-        <div class="stats">
-          <span>Rows: {{ previewData.length }}</span>
-          <span class="ml-4">Images: {{ getImageCount() }}</span>
-        </div>
-
+      
+    </div>
+    <div class="preview-wrap">
+<p class="preview-text" *ngIf="previewData.length > 0">Preview Data</p>
+    <div class="preview-section" *ngIf="previewData.length > 0">
         <div class="table-container scrollable">
           <table>
             <thead>
@@ -92,25 +145,28 @@
                     style="width: 40px; height: 40px; object-fit: cover"
                     alt="preview"
                   />
-                  <span *ngIf="(imageColumnMappings[headerLabels[i]] || false) && !cell" class="no-image">Empty</span>
+                  <span
+                    *ngIf="(imageColumnMappings[headerLabels[i]] || false) && !cell"
+                    class="no-image"
+                    >Empty</span
+                  >
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
-
-    </div>
-
     <div class="dialog-actions">
       <button
         class="btn btn-primary"
         (click)="confirmImport()"
         [disabled]="previewData.length === 0"
       >
-        Import & Generate PDFs
+        Generate & Save PDF
       </button>
       <button class="btn btn-secondary" (click)="close()">Cancel</button>
     </div>
   </div>
-</div>
+
+    </div>
+    </div>
