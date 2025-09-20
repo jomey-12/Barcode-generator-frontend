@@ -16,6 +16,7 @@ import { saveAs } from 'file-saver';
 import { DataService } from './service/data.service';
 import { HttpClientModule } from '@angular/common/http';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
+import { Product } from './models/product.model';
 
 @Component({
   selector: 'app-root',
@@ -35,8 +36,8 @@ import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-
   styleUrls: ['./app.scss'],
 })
 export class AppComponent implements OnInit {
-  currentTemplate!: TemplateWrapper | null;
-  templateName = 'My Template';
+  currentTemplate!: TemplateWrapper;
+  templateName = '';
   widgets: Widget[] = [];
   templates: TemplateWrapper[] = [];
   selectedWidget: Widget | null = null;
@@ -189,11 +190,11 @@ export class AppComponent implements OnInit {
   }
 
 handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
-  this.updateWidget({
-    widget: event.widget,
+    this.updateWidget({
+      widget: event.widget,
     updates: {orientation: event.orientation}
   })
-}
+  }
 
 
   generateBarcode() {
@@ -213,7 +214,7 @@ handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
       });
     }
   }
-  showSaveDialog = false;  
+  showSaveDialog = false;
 
   openSaveDialog() {
     this.showSaveDialog = true;
@@ -229,30 +230,31 @@ handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
       createdAt: new Date().toISOString(),
     };
 
+    //reset input values
     const templateCopy: Template = {
       ...template,
       widgets: template.widgets.map(widget => ({
         ...widget,
-        inputValue: undefined,   // reset input value
-        productId: undefined,    // reset productId
-        imageData: undefined,    // reset image data
-        imageName: undefined,    // reset image name
+        inputValue: undefined,
+        productId: undefined,
+        imageData: undefined,
+        imageName: undefined,
         hasBarcode: undefined
       }))
     };
 
     this.dataService.createTemplate({
-      name: name,
+        name: name,
       templateJson: templateCopy
     }).subscribe((saved: TemplateResponse) => {
-      this.currentTemplate = {
-        referenceId: saved.templateReferenceId,
+        this.currentTemplate = {
+          referenceId: saved.templateReferenceId,
         templateDetails: JSON.parse(saved.templateJson)
       }
-      this.templateName = name;
-      this.templates = [...this.templates, this.currentTemplate];
-      this.cdr.detectChanges();
-    });
+        this.templateName = name;
+        this.templates = [...this.templates, this.currentTemplate];
+        this.cdr.detectChanges();
+      });
   }
 
   loadTemplate(template: TemplateWrapper) {
@@ -260,6 +262,7 @@ handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
     this.currentTemplate = template;
     this.widgets = template.templateDetails.widgets.map((w) => this.createWidget(w.type, { x: 0, y: 0 }, w));
     this.selectedWidget = null;
+    this.updateJsonPreview();
 
     // Update next ID to avoid conflicts
     const maxId = Math.max(...this.widgets.map((w) => w.id), 0);
@@ -280,13 +283,12 @@ handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
         );
 
         if (this.currentTemplate?.referenceId === this.templateToBeDeleted.referenceId) {
-          this.currentTemplate = null;
-          this.templateName = ''; 
+          this.templateName = '';
           this.clearCanvas();
         }
 
         this.cdr.detectChanges();
-      }, 
+      },
       () => {
         this.deletionFailed = this.templateToBeDeleted.referenceId;
         this.cdr.detectChanges();
@@ -301,7 +303,7 @@ handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
           this.cdr.detectChanges();
         }, 2000);
       }
-    );      
+    );
   }
 
   clearCanvas() {
@@ -579,63 +581,115 @@ handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
     });
   }
   handleImportConfirmed(data: any) {
-  this.importedData = data;
-  this.showImportDialog = false;
+    this.importedData = data;
+    this.showImportDialog = false;
 
-  if (!Array.isArray(data) || data.length < 2) {
-    alert('The imported file does not contain data rows.');
-    return;
-  }
+    if (!Array.isArray(data) || data.length < 2) {
+      alert('The imported file does not contain data rows.');
+      return;
+    }
 
-  // Log image statistics
-  const headers = data[0];
-  const imageColumns = headers.filter((h: string) => h.toLowerCase().includes('image'));
-  const imageCount = this.getImageCountFromData(data);
-  
+    // Log image statistics
+    const headers = data[0];
+    const imageColumns = headers.filter((h: string) => h.toLowerCase().includes('image'));
+    const imageCount = this.getImageCountFromData(data);
+
   console.log(`Processing data with ${imageColumns.length} image columns and ${imageCount} images`);
 
-  this.onJsonImported(data);
-}
-  async onJsonImported(products2D: any[]) {
-    const selectedTemplateId = this.templates.find((t) => t.templateDetails.name === this.templateName)?.templateDetails.id;
-    if(!selectedTemplateId) {
-      return;
-    }
-    const template = this.templateService.getTemplateById(selectedTemplateId);
-    if (!template || products2D.length === 0) {
-      console.warn('Missing template or product data');
-      return;
-    }
+    this.onJsonImported(data);
 
-    try {
-      // Extract headers (first row)
-const headers = products2D[0];
-
-// Convert each subsequent row to an object based on headers
-const products = products2D.slice(1).map(row => {
-  const product: any = {};
-  row.forEach((cell: string | number, index: number) => {
-    product[headers[index]] = cell;
-  });
-  return product;
-});
-      await this.templateService.exportMultipleTemplatesWithProducts(template, products, 'TemplateExport');
-      this.widgets2 = this.templateService.widgets(); 
-
-      console.log('PDF export success');
-    } catch (error) {
-      console.error('PDF export failed:', error);
-    }
+    const jsonObjects = this.convertToJsonObjects(data);
+    const productRequests: Product[] = this.convertToProductRequests(jsonObjects);
+    this.saveProductDetails(productRequests);
   }
-  private getImageCountFromData(data: any[][]): number {
-  let count = 0;
-  data.slice(1).forEach(row => {
-    row.forEach(cell => {
-      if (typeof cell === 'string' && cell.startsWith('data:image/')) {
-        count++;
+  async onJsonImported(products2D: any[]) {
+    const selectedTemplateId = this.templates.find(
+      (t) => t.templateDetails.name === this.templateName
+    )?.referenceId;
+    if (!selectedTemplateId) {
+      return;
+    }
+    this.dataService.getTemplateById(selectedTemplateId).subscribe( async (response: TemplateResponse) => {
+      const template = JSON.parse(response.templateJson);
+      if (!template || products2D.length === 0) {
+        console.warn('Missing template or product data');
+        return;
+      }
+
+      try {
+        // Extract headers (first row)
+        const headers = products2D[0];
+
+        // Convert each subsequent row to an object based on headers
+        const products = products2D.slice(1).map((row) => {
+          const product: any = {};
+          row.forEach((cell: string | number, index: number) => {
+            product[headers[index]] = cell;
+          });
+          return product;
+        });
+        await this.templateService.exportMultipleTemplatesWithProducts(
+          template,
+          products,
+          'TemplateExport'
+        );
+        this.widgets2 = this.templateService.widgets();
+
+        console.log('PDF export success');
+      } catch (error) {
+        console.error('PDF export failed:', error);
       }
     });
-  });
-  return count;
-}
+  }
+
+  convertToJsonObjects(data: any[][]): any[] {
+    if (!data || data.length === 0) {
+      return [];
+    }
+
+    const headers = data[0];
+    const jsonObjects = data.slice(1).map(row => {
+      const obj: any = {};
+      headers.forEach((header, index) => {
+        obj[header] = row[index];
+      });
+      return obj;
+    });
+
+    return jsonObjects;
+  }
+
+  convertToProductRequests(
+    jsonObjects: any[] 
+  ): Product[] {
+    return jsonObjects.map(obj => {
+      const productId = String(obj.productId || obj.ProductId || obj.id || '').trim();
+      
+      if (!productId) {
+        throw new Error('ProductId not found in object: ' + JSON.stringify(obj));
+      }
+
+      return {
+        productId: productId,
+        productDetails: obj,
+        templateReferenceId: this.currentTemplate.referenceId
+      };
+    });
+  }
+
+  saveProductDetails(products: Product[]): void {
+    this.dataService.createProducts(products).subscribe();
+  }
+
+  private getImageCountFromData(data: any[][]): number {
+    let count = 0;
+  data.slice(1).forEach(row => {
+    row.forEach(cell => {
+        if (typeof cell === 'string' && cell.startsWith('data:image/')) {
+          count++;
+        }
+      });
+    });
+    return count;
+  }
 }

@@ -29,4 +29,8 @@ export class DataService {
     createProduct(product: Product): Observable<Product> {
         return this.http.post<any>('https://localhost:7132/api/product', product);
     }
+
+    createProducts(products: Product[]): Observable<Product[]> {
+        return this.http.post<any>('https://localhost:7132/api/product/bulk', products);
+    }
 }

@@ -10,19 +10,6 @@ declare var JsBarcode: any;
 export class TemplateService {
   private readonly STORAGE_KEY = 'templates';
   public widgets: WritableSignal<Widget[]> = signal<Widget[]>([]);
-  getTemplates(): Template[] {
-    try {
-      return JSON.parse(localStorage.getItem(this.STORAGE_KEY) || '[]');
-    } catch {
-      return [];
-    }
-  }
-
-  getTemplateById(templateId: number): Template {
-    const templates = this.getTemplates();
-    const template = templates.find(t => t.id === templateId);
-    return template ? template : {} as Template;
-  }
 
   // exportTemplate(template: Template, templateName: string) {
   //   const dataStr = JSON.stringify(template, null, 2);
