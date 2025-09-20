@@ -1,13 +1,12 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Widget } from '../models/template.model';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-properties-panel',
   templateUrl: './properties-panel.component.html',
     standalone:true,
-  imports:[CommonModule, FormsModule],
+  imports:[CommonModule],
   styleUrls: ['./properties-panel.component.scss']
 })
 export class PropertiesPanelComponent {
@@ -18,9 +17,6 @@ export class PropertiesPanelComponent {
   @Output() generateBarcode = new EventEmitter<void>();
   @Output() clearBarcode = new EventEmitter<void>();
   @Output() imageUpload = new EventEmitter<{widget: Widget, imageData: string, imageName: string}>();
-  @Output() separatorOrientation = new EventEmitter<{widget: Widget, orientation: string}>();
-
-  lineOrientation: 'horizontal' | 'vertical' = 'horizontal'; // default
 
   showSuccess = false;
   onPropertyChange(property: string, value: any) {
@@ -47,21 +43,6 @@ saveProductDetails() {
     this.showSuccess = false;
     this.successTimeout = null;
   }, 4000);
-}
-
-onOrientationChange(event: Event) {
-  if (!this.selectedWidget) return;
-
-  const select = event.target as HTMLSelectElement;
-  const newOrientation = select.value as 'horizontal' | 'vertical';
-
-  // update selected widget directly
-  this.selectedWidget.orientation = newOrientation;
-
-  this.separatorOrientation.emit({
-    widget: this.selectedWidget,
-    orientation: newOrientation
-  });
 }
 
 

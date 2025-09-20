@@ -11,7 +11,6 @@ import { FormsModule } from '@angular/forms';
 })
 export class SaveTemplateDialogComponent {
   @Input() name: string = '';
-  @Output() nameChange = new EventEmitter<string>();
 @Output() saveClicked = new EventEmitter<string>();
 
   @Output() cancel = new EventEmitter<void>();
@@ -20,12 +19,7 @@ export class SaveTemplateDialogComponent {
   this.saveClicked.emit(this.name);
 }
 
-  // called when input changes
-  onNameChange(newName: string) {
-    this.name = newName;
-    this.nameChange.emit(newName);   // notify parent
-  }
-  
+
   close() {
     this.cancel.emit();
   }
