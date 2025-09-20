@@ -56,6 +56,19 @@
     justify-content: space-between;
     align-items: center;
     padding-left: 25px;
+    flex-direction: column;
+
+    .template {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .template-usage-msg {
+      color: red;
+      font-style: italic;
+      font-size: 14px;
+    }
 
     &:hover {
       background: #e2e8f0;

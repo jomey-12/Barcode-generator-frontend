@@ -15,6 +15,12 @@
   (cancel)="showSaveDialog = false">
 </app-save-template-dialog>
 
+<app-confirmation-dialog
+  *ngIf="showConfirmationDialog"
+  (deleteClicked)="deleteTemplate()"
+  (cancel)="showConfirmationDialog = false">
+</app-confirmation-dialog>
+
   
     <app-import-template-dialog
      *ngIf="showImportDialog"
@@ -26,10 +32,11 @@
 
   <div class="main-content">
     <app-widgets-panel
+      [deletionFailed]="deletionFailed"
       [templates]="templates"
       (widgetDragStart)="onWidgetDragStart($event)"
       (loadTemplate)="loadTemplate($event)"
-      (deleteTemplate)="deleteTemplate($event)">
+      (deleteTemplate)="openDeleteConfirmationDialog($event)">
     </app-widgets-panel>
 
     <app-canvas
@@ -50,6 +57,7 @@
 
 
     <app-properties-panel
+      [currentTemplate]="currentTemplate"
       [selectedWidget]="selectedWidget"
       [jsonPreview]="jsonPreview"
       (widgetUpdate)="updateWidget($event)"

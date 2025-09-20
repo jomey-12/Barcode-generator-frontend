@@ -1,7 +1,8 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { Widget } from '../models/template.model';
+import { TemplateWrapper, Widget } from '../models/template.model';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { DataService } from '../service/data.service';
 
 @Component({
   selector: 'app-properties-panel',
@@ -11,6 +12,7 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./properties-panel.component.scss']
 })
 export class PropertiesPanelComponent {
+  @Input() currentTemplate!: TemplateWrapper | null;
   @Input() selectedWidget!: Widget | null;
   @Input() jsonPreview!: string;
 
@@ -22,7 +24,10 @@ export class PropertiesPanelComponent {
 
   lineOrientation: 'horizontal' | 'vertical' = 'horizontal'; // default
 
+  constructor(private dataService: DataService) {}
+
   showSuccess = false;
+  isTemplateNull = false; 
   onPropertyChange(property: string, value: any) {
     if (this.selectedWidget) {
       const updates: Partial<Widget> = {};
@@ -31,9 +36,28 @@ export class PropertiesPanelComponent {
     }
   }
 successTimeout: any;
+nullTemplateTimeout: any;
 
 saveProductDetails() {
-  // ... save logic ...
+  if (this.currentTemplate === undefined) {
+    this.isTemplateNull = true;
+
+    if (this.nullTemplateTimeout) {
+      clearTimeout(this.nullTemplateTimeout);
+    }
+
+    // Start a fresh timeout
+    this.nullTemplateTimeout = setTimeout(() => {
+      this.isTemplateNull = false;
+      this.nullTemplateTimeout = null;
+    }, 4000);
+    return;
+  }
+  this.dataService.createProduct({
+    productId: JSON.parse(this.jsonPreview).productId,
+    productDetails: this.jsonPreview,
+    templateReferenceId: this.currentTemplate?.referenceId ?? ""
+  }).subscribe();
 
   this.showSuccess = true;
 

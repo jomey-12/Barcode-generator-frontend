@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { Widget, Template, WidgetType } from './models/template.model';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Widget, Template, WidgetType, TemplateResponse, TemplateWrapper } from './models/template.model';
 import { TemplateService } from './service/template.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -13,6 +13,9 @@ import { ImportTemplateDialogComponent } from './app-import-template-dialog/app-
 import { jsPDF } from 'jspdf';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
+import { DataService } from './service/data.service';
+import { HttpClientModule } from '@angular/common/http';
+import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-root',
@@ -21,19 +24,21 @@ import { saveAs } from 'file-saver';
   imports: [
     CommonModule,
     FormsModule,
+    HttpClientModule,
     HeaderComponent,
     WidgetsPanelComponent,
     CanvasComponent,
     SaveTemplateDialogComponent,
     PropertiesPanelComponent,
     ImportTemplateDialogComponent,
-  ],
+    ConfirmationDialogComponent],
   styleUrls: ['./app.scss'],
 })
 export class AppComponent implements OnInit {
+  currentTemplate!: TemplateWrapper | null;
   templateName = 'My Template';
   widgets: Widget[] = [];
-  templates: Template[] = [];
+  templates: TemplateWrapper[] = [];
   selectedWidget: Widget | null = null;
   isDragOver = false;
   draggedWidgetType: WidgetType | null = null;
@@ -41,11 +46,21 @@ export class AppComponent implements OnInit {
   jsonPreview = '';
   showImportDialog = false;
   importedData: any;
-  widgets2: Widget[] = [];
-  constructor(private templateService: TemplateService) {}
+  widgets2: Widget[] = [];  deletionFailed: string = '';
+  deletionFailedTimeout: any;
+  showConfirmationDialog: boolean = false;
+  templateToBeDeleted!: TemplateWrapper;
+
+  constructor(private templateService: TemplateService, private dataService: DataService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
-    this.templates = this.templateService.getTemplates();
+    this.dataService.getAllTemplates().subscribe((templates: TemplateResponse[]) => {
+      this.templates = templates.map(t => ({
+        referenceId: t.templateReferenceId,
+        templateDetails: JSON.parse(t.templateJson)
+      }));
+      this.cdr.detectChanges()
+    });
     this.updateJsonPreview();
   }
 
@@ -198,19 +213,7 @@ handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
       });
     }
   }
-  showSaveDialog = false;
-  saveTemplate() {
-    const template: Template = {
-      id: Date.now(),
-      name: this.templateName,
-      widgets: [...this.widgets],
-      createdAt: new Date().toISOString(),
-    };
-    // this.showSaveDialog = true;
-    this.templates = this.templateService.saveTemplate(template);
-    alert('Template saved successfully! hihiihihihih');
-    this.showSaveDialog = false;
-  }
+  showSaveDialog = false;  
 
   openSaveDialog() {
     this.showSaveDialog = true;
@@ -226,13 +229,36 @@ handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
       createdAt: new Date().toISOString(),
     };
 
-    this.templates = this.templateService.saveTemplate(template);
-    alert('Template saved successfully!');
+    const templateCopy: Template = {
+      ...template,
+      widgets: template.widgets.map(widget => ({
+        ...widget,
+        inputValue: undefined,   // reset input value
+        productId: undefined,    // reset productId
+        imageData: undefined,    // reset image data
+        imageName: undefined,    // reset image name
+        hasBarcode: undefined
+      }))
+    };
+
+    this.dataService.createTemplate({
+      name: name,
+      templateJson: templateCopy
+    }).subscribe((saved: TemplateResponse) => {
+      this.currentTemplate = {
+        referenceId: saved.templateReferenceId,
+        templateDetails: JSON.parse(saved.templateJson)
+      }
+      this.templateName = name;
+      this.templates = [...this.templates, this.currentTemplate];
+      this.cdr.detectChanges();
+    });
   }
 
-  loadTemplate(template: Template) {
-    this.templateName = template.name;
-    this.widgets = template.widgets.map((w) => this.createWidget(w.type, { x: 0, y: 0 }, w));
+  loadTemplate(template: TemplateWrapper) {
+    this.templateName = template.templateDetails.name;
+    this.currentTemplate = template;
+    this.widgets = template.templateDetails.widgets.map((w) => this.createWidget(w.type, { x: 0, y: 0 }, w));
     this.selectedWidget = null;
 
     // Update next ID to avoid conflicts
@@ -240,17 +266,47 @@ handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
     this.nextId = maxId + 1;
   }
 
-  deleteTemplate(template: Template) {
-    if (confirm('Delete this template?')) {
-      this.templates = this.templateService.deleteTemplate(template.id);
-    }
+  openDeleteConfirmationDialog(template: TemplateWrapper): void {
+    this.showConfirmationDialog = true;
+    this.templateToBeDeleted = template;
+  }
+
+  deleteTemplate() {
+    this.showConfirmationDialog = false;
+    this.dataService.deleteTemplate(this.templateToBeDeleted.referenceId).subscribe(
+      () => {
+        this.templates = this.templates.filter(
+          (t) => t.referenceId !== this.templateToBeDeleted.referenceId
+        );
+
+        if (this.currentTemplate?.referenceId === this.templateToBeDeleted.referenceId) {
+          this.currentTemplate = null;
+          this.templateName = ''; 
+          this.clearCanvas();
+        }
+
+        this.cdr.detectChanges();
+      }, 
+      () => {
+        this.deletionFailed = this.templateToBeDeleted.referenceId;
+        this.cdr.detectChanges();
+
+        if (this.deletionFailedTimeout) {
+          clearTimeout(this.deletionFailedTimeout);
+        }
+
+        this.deletionFailedTimeout = setTimeout(() => {
+          this.deletionFailed = '';
+          this.deletionFailedTimeout = null;
+          this.cdr.detectChanges();
+        }, 2000);
+      }
+    );      
   }
 
   clearCanvas() {
-    if (confirm('Clear all widgets from canvas?')) {
-      this.widgets = [];
-      this.selectedWidget = null;
-    }
+    this.widgets = [];
+    this.selectedWidget = null;
   }
 
   exportTemplate() {
@@ -541,7 +597,7 @@ handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
   this.onJsonImported(data);
 }
   async onJsonImported(products2D: any[]) {
-    const selectedTemplateId = this.templates.find((t) => t.name === this.templateName)?.id;
+    const selectedTemplateId = this.templates.find((t) => t.templateDetails.name === this.templateName)?.templateDetails.id;
     if(!selectedTemplateId) {
       return;
     }

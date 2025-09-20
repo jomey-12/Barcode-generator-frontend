@@ -40,3 +40,21 @@ export interface Template {
   widgets: Widget[];
   createdAt: string;
 }
+
+export interface TemplateWrapper {
+  referenceId: string,
+  templateDetails: Template
+}
+
+export interface TemplateRequest {
+  name: string;
+  templateJson: Template;
+}
+
+export interface TemplateResponse {
+  templateReferenceId: string;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+  templateJson: string;
+}
