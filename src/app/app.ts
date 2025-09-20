@@ -523,24 +523,23 @@ handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
     });
   }
   handleImportConfirmed(data: any) {
-    this.importedData = data;
-    this.showImportDialog = false;
+  this.importedData = data;
+  this.showImportDialog = false;
 
-    if (!Array.isArray(data) || data.length < 2) {
-      alert('The imported file does not contain data rows.');
-      return;
-    }
-
-    // Assuming selectedTemplateId is currently selected template's ID in your app
-    const selectedTemplateId = this.templates.find((t) => t.name === this.templateName)?.id;
-
-    if (!selectedTemplateId) {
-      alert('No template selected.');
-      return;
-    }
-    this.onJsonImported(data);
-    // this.generateBulkPdfsZip(data, selectedTemplateId);
+  if (!Array.isArray(data) || data.length < 2) {
+    alert('The imported file does not contain data rows.');
+    return;
   }
+
+  // Log image statistics
+  const headers = data[0];
+  const imageColumns = headers.filter((h: string) => h.toLowerCase().includes('image'));
+  const imageCount = this.getImageCountFromData(data);
+  
+  console.log(`Processing data with ${imageColumns.length} image columns and ${imageCount} images`);
+
+  this.onJsonImported(data);
+}
   async onJsonImported(products2D: any[]) {
     const selectedTemplateId = this.templates.find((t) => t.name === this.templateName)?.id;
     if(!selectedTemplateId) {
@@ -572,4 +571,15 @@ const products = products2D.slice(1).map(row => {
       console.error('PDF export failed:', error);
     }
   }
+  private getImageCountFromData(data: any[][]): number {
+  let count = 0;
+  data.slice(1).forEach(row => {
+    row.forEach(cell => {
+      if (typeof cell === 'string' && cell.startsWith('data:image/')) {
+        count++;
+      }
+    });
+  });
+  return count;
+}
 }
