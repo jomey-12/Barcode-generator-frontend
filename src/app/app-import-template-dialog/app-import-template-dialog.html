@@ -1,0 +1,116 @@
+<div class="dialog-overlay">
+  <div class="dialog">
+    <div class="dialog-header">
+      <h3>📥 Bulk Import Product details</h3>
+      <button class="close-btn" (click)="close()">✖</button>
+    </div>
+
+    <div class="dialog-body">
+                <h4>Step 1: Upload Spreadsheet</h4>
+
+      <div class="top-action-grid">
+
+        <div class="left-section">
+          <button class="btn btn-primary" (click)="downloadSample()">Download Sample .xlsx</button>
+        </div>
+        <div class="right-section">
+            <input
+              type="file"
+              accept=".xlsx,.xls"
+              (change)="onFileSelect($event)"
+              #fileInput
+              hidden
+            />
+            <button class="btn btn-primary" (click)="fileInput.click()">Choose Excel File</button>
+          <div class="file-info" *ngIf="selectedFile">
+            Selected: {{ selectedFile.name }}
+          </div>
+        </div>
+      </div>
+
+      <div class="upload-section" *ngIf="showImageUpload">
+        <h4>Step 2: Upload Product Images</h4>
+
+        <div class="image-mapping-options">
+          <label class="radio-label">
+            <input
+              type="radio"
+              value="sequential"
+              name="imageMapping"
+              [(ngModel)]="imageMapping"
+            />
+            Sequential (assign images in order)
+          </label>
+          <label class="radio-label">
+            <input
+              type="radio"
+              value="filename"
+              name="imageMapping"
+              [(ngModel)]="imageMapping"
+            />
+            Filename matching (match names to products)
+          </label>
+        </div>
+
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            (change)="onImagesSelect($event)"
+            #imageInput
+            hidden
+          />
+          <button class="btn btn-primary" (click)="imageInput.click()">Choose Multiple Images</button>
+
+
+        <div class="file-info" *ngIf="selectedImages && selectedImages.length > 0">
+          Selected: {{ selectedImages.length }} image{{ selectedImages.length > 1 ? 's' : '' }}
+        </div>
+      </div>
+
+      <div class="preview-section" *ngIf="previewData.length > 0">
+        <h4>Preview Data</h4>
+        <div class="stats">
+          <span>Rows: {{ previewData.length }}</span>
+          <span class="ml-4">Images: {{ getImageCount() }}</span>
+        </div>
+
+        <div class="table-container scrollable">
+          <table>
+            <thead>
+              <tr>
+                <th *ngFor="let header of headerLabels">{{ header }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of previewData.slice(0, 3)">
+                <td *ngFor="let cell of row; let i = index">
+                  <span *ngIf="!imageColumnMappings[headerLabels[i]] || false">{{ cell }}</span>
+                  <img
+                    *ngIf="(imageColumnMappings[headerLabels[i]] || false) && cell"
+                    [src]="cell"
+                    style="width: 40px; height: 40px; object-fit: cover"
+                    alt="preview"
+                  />
+                  <span *ngIf="(imageColumnMappings[headerLabels[i]] || false) && !cell" class="no-image">Empty</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="dialog-actions">
+      <button
+        class="btn btn-primary"
+        (click)="confirmImport()"
+        [disabled]="previewData.length === 0"
+      >
+        Import & Generate PDFs
+      </button>
+      <button class="btn btn-secondary" (click)="close()">Cancel</button>
+    </div>
+  </div>
+</div>

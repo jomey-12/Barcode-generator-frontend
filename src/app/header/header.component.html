@@ -16,6 +16,35 @@
       <button class="btn btn-secondary" (click)="exportTemplate.emit()">
         Export Template
       </button>
+
+          <div class="icon-button tooltip-container">
+      <button
+        class="btn btn-primary"
+        (click)="importTemplate.emit()"
+        aria-describedby="tooltip"
+      >
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 20 20"
+          fill="none"
+          style="vertical-align: middle"
+        >
+          <path
+            d="M10 2v10m0 0l-4-4m4 4l4-4M4 16h12"
+            stroke="#333"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </button>
+      <span class="custom-tooltip" role="tooltip" id="tooltip">
+        Bulk import product details from spreadsheet
+        <span class="tooltip-arrow"></span>
+      </span>
     </div>
+    </div>
+
   </div>
 </div>
