@@ -1,21 +1,21 @@
 <div class="header">
   <h1>Barcode Generator</h1>
   <div class="controls">
-    <button class="btn btn-primary" (click)="saveTemplate.emit()">
-      Save Template
-    </button>
-    <button class="btn btn-secondary" (click)="clearCanvas.emit()">
-      Clear Canvas
-    </button>
-    <button class="btn btn-secondary" (click)="exportTemplate.emit()">
-       Export Template
-    </button>
-    <input
-      type="text"
-      [value]="templateName"
-      (input)="templateNameChange.emit($any($event.target).value)"
-      placeholder="Template name..."
-      class="template-name-input"
-    />
+    <div class="left-buttons">
+      <button class="btn btn-primary" (click)="saveTemplate.emit()">
+        Save Template
+      </button>
+      <button class="btn btn-secondary" (click)="clearCanvas.emit()">
+        Clear Canvas
+      </button>
+    </div>
+
+    <p class="template-name">{{ templateName }}</p>
+
+    <div class="right-buttons">
+      <button class="btn btn-secondary" (click)="exportTemplate.emit()">
+        Export Template
+      </button>
+    </div>
   </div>
 </div>

@@ -9,7 +9,7 @@
 
 <app-save-template-dialog
   *ngIf="showSaveDialog"
-  [name]="templateName"
+  [(name)]="templateName"
   (saveClicked)="handleSave($event)"
   (cancel)="showSaveDialog = false">
 </app-save-template-dialog>
@@ -45,7 +45,8 @@
       (widgetUpdate)="updateWidget($event)"
       (generateBarcode)="generateBarcode()"
       (clearBarcode)="clearBarcode()"
-      (imageUpload)="handleImageUpload($event)">
+      (imageUpload)="handleImageUpload($event)"
+      (separatorOrientation)="handleSeparatorOrientation($event)">
     </app-properties-panel>
   </div>
 </div>

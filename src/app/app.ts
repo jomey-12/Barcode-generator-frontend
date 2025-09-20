@@ -86,7 +86,9 @@ export class AppComponent implements OnInit {
       imageName: savedData?.imageName || '',
       // Style properties
       fontSize: savedData?.fontSize || '14px',
-      fontWeight: savedData?.fontWeight || 'normal'
+      fontWeight: savedData?.fontWeight || 'normal',
+      //separator properties
+      orientation: savedData?.orientation || 'horizontal',
     };
     return widget;
   }
@@ -157,6 +159,14 @@ export class AppComponent implements OnInit {
       updates: { imageData: event.imageData, imageName: event.imageName }
     });
   }
+
+handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
+  this.updateWidget({
+    widget: event.widget,
+    updates: {orientation: event.orientation}
+  })
+}
+
 
   generateBarcode() {
     if (this.selectedWidget?.type === 'barcode' && this.selectedWidget.productId) {

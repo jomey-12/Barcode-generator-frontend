@@ -1,7 +1,8 @@
+
 .dropped-widget {
   position: absolute;
   cursor: move;
-  padding: 5px;
+  //padding: 5px;
   min-width: 100px;
   border: 2px solid transparent;
   transition: all 0.2s ease;
@@ -16,6 +17,37 @@
     border-color: #764ba2;
     box-shadow: 0 0 15px rgba(118, 75, 162, 0.4);
   }
+//   &.selected:has(.widget-separator.horizontal){
+//     transform-origin: center center;
+// transform: rotateX(0deg);
+//   }
+
+//     &.selected:has(.widget-separator.vertical){
+//       transform-origin: center center;
+// transform: rotate(90deg) translateX(0%);
+//   }
+
+//  &.selected:has(.widget-separator.horizontal) {
+//   transform-origin: center center;
+//   transform: rotate(0deg);
+// }
+
+// &.selected:has(.widget-separator.vertical) {
+//   transform-origin: center center;
+//   transform: rotate(90deg);
+// }
+
+// .widget-separator.horizontal {
+//   transform-origin: center center;
+//   transform: rotate(0deg);
+// }
+
+// .widget-separator.vertical {
+//   transform-origin: center center;
+//   transform: rotate(90deg);
+// }
+
+
 
   .delete-widget {
     position: absolute;
@@ -47,7 +79,7 @@
 
   .widget-barcode {
     background: #f7fafc;
-    padding: 10px;
+   // padding: 10px;
     border-radius: 4px;
     text-align: center;
     min-height: 80px;
@@ -65,7 +97,7 @@
   }
 
   .widget-image {
-    padding: 20px;
+    //padding: 20px;
     border-radius: 4px;
     text-align: center;
     min-height: 120px;
@@ -212,10 +244,37 @@
 // .labeled-input-container.position-right .widget-label {
 //   margin-top: 8px; /* or whatever value you need */
 // }
-
+textarea{
+line-height: 5px;
+height: 5px;
+vertical-align: middle;
+}
 .position-left .position-right{
 textarea{
   margin-top: 16px;
 }
 
+}
+/* disable borders and shadows while exporting */
+.exporting .dropped-widget 
+{&.selected {
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+}
+
+/* Hide borders/shadows when exporting */
+.export-mode .dropped-widget.selected {
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Hide delete-widget elements */
+.export-mode .delete-widget {
+  display: none !important;
+}
+
+.dropped-widget,
+#canvas-container {
+  overflow: visible;
 }
