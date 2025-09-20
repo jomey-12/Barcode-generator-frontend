@@ -158,6 +158,18 @@
   animation-delay: 3.5s; /* start fading near the end */
 }
 
+.info-message {
+  margin-top: 0.5rem;
+  color: black;
+  background: lightgrey;
+  border: 1px solid #c3e6cb;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  animation: fadeOut 0.5s ease forwards;
+  animation-delay: 3.5s; /* start fading near the end */
+}
+
 @keyframes fadeOut {
   to {
     opacity: 0;

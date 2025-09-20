@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { Template, WidgetType } from '../models/template.model';
+import { Template, TemplateWrapper, WidgetType } from '../models/template.model';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -10,17 +10,18 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./widgets-panel.component.scss']
 })
 export class WidgetsPanelComponent {
-  @Input() templates!: Template[];
+  @Input() deletionFailed: string = '';
+  @Input() templates!: TemplateWrapper[];
   @Output() widgetDragStart = new EventEmitter<WidgetType>();
-  @Output() loadTemplate = new EventEmitter<Template>();
-  @Output() deleteTemplate = new EventEmitter<Template>();
+  @Output() loadTemplate = new EventEmitter<TemplateWrapper>();
+  @Output() deleteTemplate = new EventEmitter<TemplateWrapper>();
 
   onDragStart(widgetType: WidgetType, event: DragEvent) {
     this.widgetDragStart.emit(widgetType);
     event.dataTransfer!.effectAllowed = 'copy';
   }
 
-  onDeleteTemplate(template: Template, event: Event) {
+  onDeleteTemplate(template: TemplateWrapper, event: Event) {
     event.stopPropagation();
     this.deleteTemplate.emit(template);
   }

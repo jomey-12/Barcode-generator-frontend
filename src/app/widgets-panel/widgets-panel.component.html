@@ -23,7 +23,8 @@
       class="template-item"
       (click)="loadTemplate.emit(template)"
     >
-      <span>{{template.name}}</span>
+    <div class="template">
+      <span>{{template.templateDetails.name}}</span>
 <!-- template -->
 <button
   class="icon-btn"
@@ -36,10 +37,12 @@
     <path fill="currentColor" d="M9 3h6l1 2h4v2H4V5h4l1-2zm1 6v8h2V9H10zm4 0v8h2V9h-2zM6 9v10a2 2 0 002 2h8a2 2 0 002-2V9H6z"/>
   </svg>
 </button>
+</div>
 
 
-
+    <span class="template-usage-msg" *ngIf="deletionFailed !== '' && template.referenceId === deletionFailed">Oops! Template in use.</span>
     </div>
+
   </div>
 
   </div>

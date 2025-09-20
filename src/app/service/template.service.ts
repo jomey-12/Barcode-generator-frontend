@@ -18,37 +18,10 @@ export class TemplateService {
     }
   }
 
-  saveTemplate(template: Template): Template[] {
-  const templates = this.getTemplates();
-
-  // Create a copy of the template to avoid mutating the original
-  const templateCopy: Template = {
-    ...template,
-    widgets: template.widgets.map(widget => ({
-      ...widget,
-      inputValue: undefined,   // reset input value
-      productId: undefined,    // reset productId
-      imageData: undefined,    // reset image data
-      imageName: undefined,    // reset image name
-      hasBarcode: undefined
-    }))
-  };
-
-    templates.push(templateCopy);
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(templates));
-    return templates;
-  }
   getTemplateById(templateId: number): Template {
     const templates = this.getTemplates();
     const template = templates.find(t => t.id === templateId);
     return template ? template : {} as Template;
-  }
-
-  deleteTemplate(templateId: number): Template[] {
-    const templates = this.getTemplates();
-    const filteredTemplates = templates.filter((t) => t.id !== templateId);
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(filteredTemplates));
-    return filteredTemplates;
   }
 
   // exportTemplate(template: Template, templateName: string) {
