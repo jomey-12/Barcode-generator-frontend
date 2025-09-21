@@ -2,6 +2,8 @@ export type WidgetType = 'labeled-input' | 'barcode' | 'image' | 'separator' | '
 
 export type LabelPosition = 'left' | 'right' | 'top' | 'bottom';
 
+export type BarcodeType = 'CODE128' | 'CODE39' | 'EAN13' | 'UPC' | 'ITF14';
+
 export interface Widget {
   id: number;
   type: WidgetType;
@@ -20,6 +22,7 @@ export interface Widget {
   labelPosition?: LabelPosition;
   
   // Barcode properties
+  barcodeType?: BarcodeType;
   productId?: string;
   hasBarcode?: boolean;
   

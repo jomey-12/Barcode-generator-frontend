@@ -8,9 +8,23 @@
   <!-- Barcode Properties -->
   <div *ngIf="selectedWidget && selectedWidget.type === 'barcode'" class="widget-properties">
     <h4>Widget: Barcode</h4>
+
+    <div class="property-group">
+      <label>Barcode Type</label>
+      <select
+        [value]="selectedWidget.barcodeType"
+        (change)="onPropertyChange('barcodeType', $any($event.target).value)"
+      >
+        <option value="CODE128">CODE128</option>
+        <option value="CODE39">CODE39</option>
+        <option value="EAN13">EAN13</option>
+        <option value="UPC">UPC</option>
+        <option value="ITF14">ITF14</option>
+      </select>
+    </div>
     
     <button class="btn btn-primary full-width" (click)="generateBarcode.emit()">
-       Generate Barcode
+      Generate Barcode
     </button>
     
     <!-- <div class="property-group json-data">

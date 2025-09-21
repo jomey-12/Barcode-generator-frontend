@@ -1,5 +1,5 @@
 import { Injectable, signal, WritableSignal } from '@angular/core';
-import { Template, Widget } from '../models/template.model';
+import { BarcodeType, Template, Widget } from '../models/template.model';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 declare var JsBarcode: any;
@@ -299,7 +299,22 @@ export class TemplateService {
   }, 100); // Small delay to ensure CSS is applied
 }
 
-  generateCode128ProductId(): string {
+  generateProductIdByFormat(format: string) {
+    switch (format.toUpperCase()) {
+      case 'EAN13':
+        return this.generateNumericProductId(12, 'EAN13');
+      case 'UPC':
+        return this.generateNumericProductId(11, 'UPC');
+      case 'ITF14':
+        return this.generateNumericProductId(13, 'UPC');
+      case 'CODE128':
+      case 'CODE39':
+      default:
+        return this.generateAlphanumericProductId();
+    }
+  }
+
+  generateAlphanumericProductId(): string {
     // Generate 3 random uppercase letters
     const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     let alphabetPart = '';
@@ -314,6 +329,45 @@ export class TemplateService {
     }
     
     return alphabetPart + digitPart;
+  }
+
+  private generateNumericProductId(digitCount: number, type: string): string {
+    const digits = Array.from({length: digitCount}, () => 
+      Math.floor(Math.random() * 10).toString()
+    ).join('');
+    
+    const checkDigit = this.calculateModulo10CheckDigit(digits, type);
+    return digits + checkDigit;
+  }
+
+  private calculateModulo10CheckDigit(digits: string, type: string): string {
+    let oddSum = 0;
+    let evenSum = 0;
+    
+    if (type === 'EAN13') {
+      // Odd positions (1,3,5...) = weight 1, Even positions (2,4,6...) = weight 3
+      for (let i = 0; i < digits.length; i++) {
+        if (i % 2 === 0) {
+          oddSum += parseInt(digits[i]);
+        } else {
+          evenSum += parseInt(digits[i]);
+        }
+      }
+      const total = oddSum + (evenSum * 3);
+      return ((10 - (total % 10)) % 10).toString();
+      
+    } else {
+      // Odd positions (1,3,5...) = weight 3, Even positions (2,4,6...) = weight 1
+      for (let i = 0; i < digits.length; i++) {
+        if (i % 2 === 0) {
+          oddSum += parseInt(digits[i]);
+        } else {
+          evenSum += parseInt(digits[i]);
+        }
+      }
+      const total = (oddSum * 3) + evenSum;
+      return ((10 - (total % 10)) % 10).toString();
+    }
   }
 
   async exportMultipleTemplatesWithProducts(template: Template, products: any[], templateName: string) {
@@ -676,12 +730,13 @@ export class TemplateService {
         element.style.flexDirection = 'column';
         
         if (widget.hasBarcode) {
-          widget.productId = this.generateCode128ProductId();
+          widget.barcodeType = widget.barcodeType ?? 'CODE128';
+          widget.productId = this.generateProductIdByFormat(widget.barcodeType);
           // Remove border when barcode is present
           element.style.border = 'none';
           
           // Generate actual barcode using canvas
-          const barcodeCanvas = this.generateBarcodeCanvas(widget.productId);
+          const barcodeCanvas = this.generateBarcodeCanvas(widget.productId, widget.barcodeType);
           if (barcodeCanvas) {
             const barcodeImg = document.createElement('img');
             barcodeImg.src = barcodeCanvas.toDataURL();
@@ -724,7 +779,7 @@ export class TemplateService {
 
     return element;
   }
-  private generateBarcodeCanvas(productId: string): HTMLCanvasElement {
+  private generateBarcodeCanvas(productId: string, barcodeType: BarcodeType): HTMLCanvasElement {
     const canvas = document.createElement('canvas');
 
     try {
@@ -739,7 +794,7 @@ export class TemplateService {
 
       // Generate barcode
       (window as any).JsBarcode(canvas, productId, {
-        format: 'CODE128',
+        format: barcodeType,
         width: 2,
         height: 60,
         displayValue: true,

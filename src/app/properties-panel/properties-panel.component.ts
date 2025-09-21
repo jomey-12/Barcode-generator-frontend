@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { TemplateWrapper, Widget } from '../models/template.model';
+import { BarcodeType, TemplateWrapper, Widget } from '../models/template.model';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DataService } from '../service/data.service';
@@ -23,6 +23,7 @@ export class PropertiesPanelComponent {
   @Output() clearQr = new EventEmitter<void>();
   @Output() imageUpload = new EventEmitter<{widget: Widget, imageData: string, imageName: string}>();
   @Output() separatorOrientation = new EventEmitter<{widget: Widget, orientation: string}>();
+  @Output() barcodeType = new EventEmitter<BarcodeType>();
 
   lineOrientation: 'horizontal' | 'vertical' = 'horizontal'; // default
 
@@ -35,6 +36,10 @@ export class PropertiesPanelComponent {
       const updates: Partial<Widget> = {};
       updates[property as keyof Widget] = value;
       this.widgetUpdate.emit({ widget: this.selectedWidget, updates });
+
+      if (this.selectedWidget.hasBarcode) {
+        this.barcodeType.emit(this.selectedWidget.barcodeType);
+      }
     }
   }
 successTimeout: any;
