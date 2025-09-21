@@ -10,6 +10,8 @@
   background-position: bottom;
   color: #f7f7f7;
   transition: background-color 0.2s, color 0.2s;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 100, 100, 0.5) transparent;
 
   .btn-primary {
   background: linear-gradient(120deg, #383838 0%, #c19a57 100%);
