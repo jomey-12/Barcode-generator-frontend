@@ -184,6 +184,32 @@
     cursor: nwse-resize;
     border-radius: 2px;
   }
+
+  /* Edges */
+  .resize-handle-top {
+    cursor: n-resize;   /* ↑ */
+  }
+  .resize-handle-right {
+    cursor: e-resize;   /* → */
+  }
+  .resize-handle-bottom {
+    cursor: s-resize;   /* ↓ */
+  }
+  .resize-handle-left {
+    cursor: w-resize;   /* ← */
+  }
+
+  /* Corners */
+  .resize-handle-top-left {
+    cursor: nwse-resize; /* ↖↘ */
+  }
+  .resize-handle-bottom-left {
+    cursor: nesw-resize; /* ↙↗ */
+  }
+  .resize-handle-bottom-right {
+    cursor: nwse-resize; /* ↘↖ */
+  }
+
 }
 
 
