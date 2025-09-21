@@ -1,8 +1,7 @@
 .template-creator {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #000000 0%, #330040 50%, #5d0076 80%, #a259ff 100%);
   min-height: 100vh;
-  padding: 20px;
 
   .main-content {
     display: grid;
@@ -11,5 +10,6 @@
    // height: calc(100vh - 800px);
     max-width: 1400px;
     margin: 0 auto;
+    padding: 20px;
   }
 }

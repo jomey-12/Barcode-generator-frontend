@@ -3,7 +3,7 @@
   <h3>Widgets</h3>
   <div class="widgets-grid">
     <div class="widget-item" draggable="true" (dragstart)="onDragStart('labeled-input', $event)">
-      Labeled Input
+      Text Input
     </div>
     <div class="widget-item" draggable="true" (dragstart)="onDragStart('barcode', $event)">
       Barcode
@@ -15,9 +15,14 @@
       Separator Line
     </div>
   </div>
+  <div class="saved-templates">
   <h3 class="templates-title">Saved Templates</h3>
-  <div class="templates-list">
-    <div class="templates-scroll">
+   <div *ngIf="templates?.length == 0" class="no-templates-saved">
+      <p>No templates saved!</p>
+    </div>
+  <div class="templates-list" *ngIf="templates?.length">
+   
+    <div class="templates-scroll" >
         <div
       *ngFor="let template of templates"
       class="template-item"
@@ -45,5 +50,6 @@
 
   </div>
 
+  </div>
   </div>
 </div>

@@ -1,24 +1,38 @@
 <div class="header">
-  <h1>Barcode Generator</h1>
-  <div class="controls">
+  <!-- Logo -->
+  <div class="logo">
+  </div>
+
+  <!-- Template name -->
+  <p class="template-name">{{ templateName }}</p>
+
+  <!-- Buttons -->
+  <div class="buttons-container">
     <div class="left-buttons">
-      <button class="btn btn-primary" (click)="saveTemplate.emit()">
-        Save Template
+      <button class="btn btn-secondary" (click)="saveTemplate.emit()">
+        <div class="save-icon"></div>
+        <span>Save Template</span>
       </button>
       <button class="btn btn-secondary" (click)="clearCanvas.emit()">
-        Clear Canvas
+       <div class="clear-icon"></div>
+        <span>Clear Canvas</span>
       </button>
     </div>
 
     <p class="template-name" *ngIf="templateName !== ''">Current Template: {{ templateName }}</p>
 
     <div class="right-buttons">
-      <button class="btn btn-secondary" (click)="exportTemplate.emit()">
-        Export Template
+<button class="btn btn-secondary" (click)="exportTemplate.emit()">
+        <div class="export-icon"></div>
+        <span>Export Template</span>
       </button>
 
-          <div class="icon-button tooltip-container">
-      <button
+      <button class="btn btn-secondary" (click)="importTemplate.emit()">
+        <div class="import-icon"></div>
+        <span>Import Details</span>
+      </button>
+             
+      <!-- <button
         class="btn btn-primary"
         (click)="importTemplate.emit()"
         aria-describedby="tooltip"
@@ -42,9 +56,9 @@
       <span class="custom-tooltip" role="tooltip" id="tooltip">
         Bulk import product details from spreadsheet
         <span class="tooltip-arrow"></span>
-      </span>
+      </span> -->
     </div>
-    </div>
+   
 
   </div>
 </div>
