@@ -152,11 +152,11 @@
     color: white;
     border: 1px solid #f7f7f1;
 
-    &:hover, &:focus {
+    &:hover {
     // transform: translateY(-2px);
   //   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
   background-color: #969392;         /* Slightly darker bg on hover */
-  color: #222;                       /* Even darker text color on hover */
+  color: #222 !important;                       /* Even darker text color on hover */
   border-color: #969392;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
   }

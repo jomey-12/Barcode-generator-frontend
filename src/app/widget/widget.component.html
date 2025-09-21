@@ -34,6 +34,7 @@
       appBarcode
       [productId]="widget.productId"
       [barcodeType]="widget.barcodeType ?? 'CODE128'"
+      (productIdChange)="onProductIdUpdate($event, widget)"
     ></svg>
   </div>
 

@@ -222,6 +222,18 @@ handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
     }
   }
 
+  onMasterWidgetUpdate(event: { widget: Widget; updates: Partial<Widget> }) {
+    const widgetToUpdate = this.widgets.find(w => w.id === event.widget.id);
+
+    if (widgetToUpdate) {
+      Object.assign(widgetToUpdate, event.updates);
+      if (this.selectedWidget && this.selectedWidget.id === event.widget.id) {
+        Object.assign(this.selectedWidget, event.updates);
+      }
+      this.updateJsonPreview();
+    }
+  }
+
   clearBarcode() {
     if (this.selectedWidget?.type === 'barcode') {
       this.updateWidget({
@@ -393,6 +405,7 @@ handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
     });
 
     this.jsonPreview = JSON.stringify(jsonData, null, 2);
+    this.cdr.detectChanges();
   }
 
   openImportDialog() {
