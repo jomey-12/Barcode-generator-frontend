@@ -2,7 +2,32 @@
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   background: linear-gradient(135deg, #000000 0%, #330040 50%, #5d0076 80%, #a259ff 100%);
   min-height: 100vh;
+  background-image: url('../assets/golden_warm.JPG');
+  background-image:
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.9), rgba(0,0,0,0)), /* fade black at top */
+    url('../assets/golden_warm.JPG');
+  background-size: cover;
+  background-position: bottom;
+  color: #f7f7f7;
+  transition: background-color 0.2s, color 0.2s;
 
+  .btn-primary {
+  background: linear-gradient(120deg, #383838 0%, #c19a57 100%);
+  color: #f7f2e3; /* soft ivory, readable on dark/gold */
+  font-weight: 600;
+  border-radius: 18px;
+  padding: 0.7em 1.4em;
+  border: none;
+  box-shadow: 0 2px 12px rgba(35,35,35,0.18);
+  transition: background 0.3s, box-shadow 0.2s;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background: linear-gradient(120deg, #222 0%, #b89d69 100%);
+  color: #ffe7a0;
+  box-shadow: 0 4px 24px rgba(56,56,56,0.28);
+}
   .main-content {
     display: grid;
     grid-template-columns: 250px 1fr 300px;

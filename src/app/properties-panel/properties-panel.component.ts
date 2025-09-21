@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { BarcodeType, TemplateWrapper, Widget } from '../models/template.model';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -27,7 +27,7 @@ export class PropertiesPanelComponent {
 
   lineOrientation: 'horizontal' | 'vertical' = 'horizontal'; // default
 
-  constructor(private dataService: DataService) {}
+  constructor(private dataService: DataService, private cdr: ChangeDetectorRef) {}
 
   showSuccess = false;
   isTemplateNull = false; 
@@ -77,6 +77,7 @@ saveProductDetails() {
   this.successTimeout = setTimeout(() => {
     this.showSuccess = false;
     this.successTimeout = null;
+    this.cdr.detectChanges();
   }, 4000);
 }
 
