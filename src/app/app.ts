@@ -151,6 +151,7 @@ export class AppComponent implements OnInit {
       this.widgets.splice(index, 1);
       if (this.selectedWidget?.id === widget.id) {
         this.selectedWidget = null;
+        this.updateJsonPreview();
       }
     }
   }
@@ -196,9 +197,9 @@ handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
   })
   }
 
-
   generateBarcode() {
-    if (this.selectedWidget?.type === 'barcode' && this.selectedWidget.productId) {
+    if (this.selectedWidget?.type === 'barcode') {
+      this.selectedWidget.productId = this.templateService.generateCode128ProductId();
       this.updateWidget({
         widget: this.selectedWidget,
         updates: { hasBarcode: true },
@@ -589,16 +590,20 @@ handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
       return;
     }
 
+    // Enhance data with productId FIRST, before any other processing
+    const enhancedData = this.addProductIdsToData(data);
+    this.importedData = enhancedData;
+
     // Log image statistics
-    const headers = data[0];
+    const headers = enhancedData[0];
     const imageColumns = headers.filter((h: string) => h.toLowerCase().includes('image'));
-    const imageCount = this.getImageCountFromData(data);
+    const imageCount = this.getImageCountFromData(enhancedData);
 
   console.log(`Processing data with ${imageColumns.length} image columns and ${imageCount} images`);
 
-    this.onJsonImported(data);
+    this.onJsonImported(enhancedData);
 
-    const jsonObjects = this.convertToJsonObjects(data);
+    const jsonObjects = this.convertToJsonObjects(enhancedData);
     const productRequests: Product[] = this.convertToProductRequests(jsonObjects);
     this.saveProductDetails(productRequests);
   }
@@ -640,6 +645,37 @@ handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
         console.error('PDF export failed:', error);
       }
     });
+  }
+
+  private addProductIdsToData(data: any[]): any[] {
+    if (!Array.isArray(data) || data.length < 2) {
+      return data;
+    }
+
+    const enhancedData = [...data];
+    
+    // Add productId to headers if not present
+    const headers = [...data[0]];
+    if (!headers.includes('productId')) {
+      headers.push('productId');
+      enhancedData[0] = headers;
+    }
+
+    // Add productId to each data row
+    for (let i = 1; i < enhancedData.length; i++) {
+      const row = [...data[i]];
+      
+      const productIdIndex = data[0].indexOf('productId');
+      if (productIdIndex === -1) {
+        row.push(this.templateService.generateCode128ProductId());
+      } else if (!row[productIdIndex]) {
+        row[productIdIndex] = this.templateService.generateCode128ProductId();
+      }
+      
+      enhancedData[i] = row;
+    }
+
+    return enhancedData;
   }
 
   convertToJsonObjects(data: any[][]): any[] {
