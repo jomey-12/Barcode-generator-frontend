@@ -34,6 +34,7 @@
       appBarcode
       [productId]="widget.productId"
       [barcodeType]="widget.barcodeType ?? 'CODE128'"
+      (productIdChange)="onProductIdUpdate($event, widget)"
     ></svg>
   </div>
 
@@ -100,13 +101,13 @@
     <!--Description Labeled Input Widget -->
   <div
     *ngIf="widget.type === 'description-input'"
-    class="labeled-input-container"
-    id="labeled-input-container"
-    [class]="'position-' + widget.labelPosition"
+    class="description-input-container"
+    id="description-input-container"
+    [class]="'position-' + widget.descriptionLabelPosition"
   >
     <div
       class="widget-label"
-      [class.hidden]="widget.hideLabel"
+      [class.hidden]="widget.descriptionHideLabel"
     >
       {{widget.descriptionLabelText}}
     </div>
