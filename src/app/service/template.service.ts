@@ -3,6 +3,7 @@ import { BarcodeType, Template, Widget } from '../models/template.model';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 declare var JsBarcode: any;
+import QRCode from 'qrcode';
 
 @Injectable({
   providedIn: 'root',
@@ -452,6 +453,22 @@ export class TemplateService {
             widget.hasBarcode = !!widget.productId;
           }
         }
+if (widget.type === 'qr-code') {
+  // Collect relevant fields from product
+  const qrPayload: Record<any, any> = {};
+
+  // Example: Include all product keys and values
+  Object.keys(product).forEach(key => {
+    qrPayload[key] = product[key];
+  });
+
+  // Convert to JSON string
+  widget.qrData = JSON.stringify(qrPayload);
+
+  // Mark QR as available
+  widget.hasQr = !!widget.qrData;
+}
+
       }
 
       // Create a temporary canvas container for this specific product
@@ -754,7 +771,7 @@ export class TemplateService {
     element.style.border = 'none';
 
     // Generate actual QR code using canvas
-    const qrcodeCanvas = this.generateQRCodeCanvas('name'); // synchronous
+    const qrcodeCanvas = this.generateQRCodeCanvas(widget.qrData); // synchronous
     if (qrcodeCanvas) {
       const qrcodeImg = document.createElement('img');
       qrcodeImg.src = qrcodeCanvas.toDataURL();
@@ -864,47 +881,33 @@ export class TemplateService {
     }
     return canvas;
   }
+
+  
 private generateQRCodeCanvas(data: any): HTMLCanvasElement {
-  const canvas = document.createElement('canvas');
+  const qrText = typeof data === 'object' ? JSON.stringify(data) : String(data);
 
-  try {
-    // Check if QRCode library is available
-    if (!(window as any).QRCode) {
-      console.warn('QRCode library not found. Make sure it is loaded.');
-    }
+  const container = document.createElement('div');
 
-    // Convert JSON object to string if needed
-    let qrText: string;
-    if (typeof data === 'object') {
-      qrText = JSON.stringify(data);
-    } else {
-      qrText = String(data);
-    }
+  // Generate QR using qrcodejs
+  new (window as any).QRCode(container, {
+    text: qrText,
+    width: 100,
+    height: 100,
+    colorDark: '#000000',
+    colorLight: '#ffffff',
+    correctLevel: (window as any).QRCode.CorrectLevel.H
+  });
 
-    // Set canvas size
-    canvas.width = 100;
-    canvas.height = 100;
+  // Grab generated canvas (qrcodejs appends inside container)
+  const canvas = container.querySelector('canvas') as HTMLCanvasElement;
 
-    // Generate QR code synchronously on canvas
-    (window as any).QRCode.toCanvas(canvas, qrText, {
-      width: 100,
-      margin: 2,
-      color: {
-        dark: '#000000',
-        light: '#ffffff'
-      }
-    }, function(err: any) {
-      if (err) {
-        console.error('Error generating QR code:', err);
-      }
-    });
-
-  } catch (error) {
-    console.error('Error generating QR code:', error);
+  if (!canvas) {
+    throw new Error('QR Code canvas not generated');
   }
 
   return canvas;
 }
 
+  
 
 }
