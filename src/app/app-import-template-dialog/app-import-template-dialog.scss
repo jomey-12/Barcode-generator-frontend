@@ -1,5 +1,4 @@
 .dialog-overlay {
-  color: white;
   position: fixed;
   top: 0;
   left: 0;
@@ -9,7 +8,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
 }
 
 .dialog {
@@ -22,6 +20,7 @@
   padding: 1rem;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   animation: fadeIn 0.3s ease;
+  border: 1px solid #f7f7f1;
 }
 
 .dialog-header {
@@ -54,6 +53,7 @@
     font-size: 13px;
     display: block;
     margin-left: 51px;
+    padding-top: 0.4rem;
   }
     a:-webkit-any-link {
     color: lightgray;
@@ -63,6 +63,7 @@
     margin-bottom: 1rem;
     display: flex;
     flex-direction: column;
+    margin-left: 45px;
 
     .radio-label {
       cursor: pointer;
@@ -151,17 +152,26 @@
     border-radius: 5px;
     border: none;
     transition: background-color 0.2s ease;
+    height: 44px;
+    display: flex;
+    align-items: center;
 
     &.btn-primary {
       color: white;
       width: 155px; 
       &:disabled {
-        background-color: #a5b4fc;
+        background-color: #969392;
         cursor: not-allowed;
+        box-shadow: none ;
+        border: none;   
+        color: #262020;     
       }
 
       &:not(:disabled):hover {
-        background-color: #4338ca;
+        background-color: #969392;         /* Slightly darker bg on hover */
+  color: #222;                       /* Even darker text color on hover */
+  border-color: #969392;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
       }
     }
 
@@ -170,10 +180,41 @@
       color: #374151;
 
       &:hover {
-        background-color: #d1d5db;
+        background-color: #969392;
+        color: #f7f7f1;
       }
     }
   }
+  .btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  margin-bottom: 10px;
+      transition: background-color 0.2s, color 0.2s;
+
+  
+
+  &.btn-primary {
+    // background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #262020;
+    color: white;
+    border: 1px solid #f7f7f1;
+
+    &:hover, &:focus {
+    // transform: translateY(-2px);
+  //   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  background-color: #969392;         /* Slightly darker bg on hover */
+  color: #222;                       /* Even darker text color on hover */
+  border-color: #969392;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+
+  }
+}
+
 }
 
 .file-info {
@@ -207,13 +248,31 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  color: lightgray;
 }
 
 .close-btn {
-  background: transparent;
+  background-color: #121212;
   border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
   font-size: 1.2rem;
   cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: none;
+  outline: none;
+  color: darkgray;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+  background-color: #e5e7eb;         /* Slightly darker bg on hover */
+  color: #222;                       /* Even darker text color on hover */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
 .upload-section {
@@ -248,18 +307,33 @@
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  // background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  // background: linear-gradient(148deg, #262020 57%, #C0C0C0 151%); 
+  background: #262020;
+        border: 1px solid #f7f7f1;
   border-radius: 12px;
   text-align: center;
   font-weight: 600;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  color: #fff;
+  color: #f7f7f1;
   width: 200px;
 }
+  .btn-primary:hover, .btn-primary:focus {
+    // transform: translateY(-2px);
+  //   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  background-color: #969392;         /* Slightly darker bg on hover */
+  color: #222;                       /* Even darker text color on hover */
+  border-color: #969392;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
 
 .btn-primary:disabled {
   background: #cccccc;
   cursor: not-allowed;
+
+  &:hover {
+    background-color: #cccccc;
+  }
 }
 
 .btn-secondary {
@@ -269,6 +343,7 @@
 
 .choose-file {
   padding: 10px;
+  margin-left: 45px;
 }
 table {
   width: 100%;
@@ -424,7 +499,7 @@ input[type="radio"]:checked::before {
   border-radius: 6px;
   position: absolute;
   top: 50%;
-  right: 10%;
+  right: 2%;
   transform: translateY(-50%);
   margin-left: 10px;
   font-size: 14px;
@@ -438,7 +513,7 @@ input[type="radio"]:checked::before {
 
 .custom-tooltip2 {
   top: 53%;
-  right: 33%;
+  right: 26%;
 }
 
 .tooltip-container:hover .custom-tooltip,

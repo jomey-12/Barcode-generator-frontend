@@ -1,5 +1,10 @@
 <div class="properties-panel">
-  <h3>⚙️ Properties</h3>
+  <!-- <div style="display: flex; gap:8px"> -->
+<!-- <span class="properties-icon"> -->
+  <!-- </span>  -->
+  <span>Properties</span>
+  
+  <!-- </div> -->
   
   <div *ngIf="!selectedWidget" class="no-selection">
     <p>Select a widget to edit its properties</p>
@@ -195,9 +200,9 @@
      
     
 <div *ngIf="showSuccess" class="success-message">
-  ✅ Product details saved successfully!
+   ✓ Success! Product details saved.
 </div>
 <div *ngIf="isTemplateNull" class="info-message">
   Please save your template first!
 </div>
-    </div>
+</div>

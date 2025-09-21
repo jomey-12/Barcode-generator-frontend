@@ -1,8 +1,8 @@
 .widgets-panel {
-      margin-top: -25px;
-
   h3{
     color: white;
+    margin-top: 0;
+
   }
 
   .templates-list {
@@ -31,6 +31,17 @@
     align-items: center;
     padding-left: 25px;
     flex-direction: column;
+    background: #262020;
+    color: white;
+    border: 1px solid #f7f7f1;
+    margin-right: 10px;
+ 
+    &:hover, &:focus {
+    background-color: #969392 !important;         /* Slightly darker bg on hover */
+    color: #222;                       /* Even darker text color on hover */
+    border-color: #969392;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
 
     .template {
       width: 100%;
@@ -42,9 +53,9 @@
       color: red;
       font-style: italic;
       font-size: 14px;
+      align-self: flex-start;
     }
-        background: beige;
-    margin-right: 10px;
+
 
     &:hover {
       background: #e2e8f0;
@@ -95,7 +106,15 @@
 }
 
 .widget-item {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  // background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    // background: linear-gradient(148deg, #383838 57%, #c19a57 151%);
+        // background: linear-gradient(148deg, #383832 57%, #C0C0C0 151%);
+        background: linear-gradient(
+      148deg,
+      #262020 70%,
+      #C0C0C0 217%); 
+        border: 1px solid #f7f7f1;
+        
   color: white;
  height: 88px;
     /* padding: 30px 20px; */
@@ -112,15 +131,18 @@
   user-select: none;
 }
 
-.widget-item:hover {
+.widget-item:hover  {
   transform: translateY(-5px) scale(1.05);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  // box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  // box-shadow: 0 12px 28px -10px rgba(192, 192, 192, 0.35), 0 3px 20px 0 rgba(255, 255, 255, 0.08), 0 2px 0 0 rgba(255, 255, 255, 0.07);
+    box-shadow: 0 12px 28px -10px rgba(192, 192, 192, 0.35), 0 3px 20px 0 rgba(255, 255, 255, 0.08), 0 2px 0 0 rgba(255, 255, 255, 0.07);
 }
 
 .widget-item:active {
   cursor: grabbing;
   transform: scale(0.97);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 12px 28px -10px rgba(192, 192, 192, 0.35), 0 3px 20px 0 rgba(255, 255, 255, 0.08), 0 2px 0 0 rgba(255, 255, 255, 0.07);
 }
 
 

@@ -7,6 +7,7 @@
 }
 
 .dialog {
+    background: #121212 !important;
     position: fixed;
     top: 50%;
     left: 50%;
@@ -17,8 +18,9 @@
     min-width: 340px;
     max-width: 90%;
     z-index: 1001;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-    animation: fadeInScale 0.25s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 0.3s ease;
+    border: 1px solid #f7f7f1;
 }
 
 @keyframes fadeInScale {
@@ -47,15 +49,28 @@
 }
 
 .close-btn {
-    border: none;
-    background: transparent;
-    font-size: 1.2rem;
-    cursor: pointer;
-    color: #666;
+  background-color: #121212;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: none;
+  outline: none;
+  color: darkgray;
+  margin-left: 20px;;
 }
 
-.close-btn:hover {
-    color: #000;
+.close-btn:hover,
+.close-btn:focus {
+  background-color: #e5e7eb;         /* Slightly darker bg on hover */
+  color: #222;                       /* Even darker text color on hover */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
 .dialog-body {
@@ -86,13 +101,21 @@
 }
 
 .btn-primary {
-    background: #007bff;
+    // background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #262020;
     color: white;
+    border: 1px solid #f7f7f1;
+
+    &:hover, &:focus {
+    // transform: translateY(-2px);
+  //   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  background-color: #969392;         /* Slightly darker bg on hover */
+  color: #222;                       /* Even darker text color on hover */
+  border-color: #969392;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
 }
 
-.btn-primary:hover {
-    background: #0069d9;
-}
 
 .btn-secondary {
     background: #f1f1f1;

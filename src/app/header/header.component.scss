@@ -7,6 +7,15 @@
   padding: 45px;
   border-bottom: 1px solid grey;
   margin-bottom: 20px;
+  // background: linear-gradient(to bottom, #121212, transparent);
+  background: linear-gradient(
+  to bottom,
+  rgba(18, 18, 18, 1) 0%,       /* solid black at top */
+  rgba(18, 18, 18, 0.9) 40%,    /* mostly opaque */
+  rgba(18, 18, 18, 0.6) 65%,    /* semi-transparent */
+  rgba(18, 18, 18, 0.3) 85%,    /* quite transparent */
+  rgba(18, 18, 18, 0) 100%      /* fully transparent at bottom */
+);
 }
 
 /* Logo fixed on extreme left */
@@ -25,7 +34,7 @@
 /* Template name centered */
 .template-name {
   transform: translateX(-40%);
-  color: white;
+  color: f7f7f1;
   font-weight: 600;
   font-size: 16px;
   margin: 0;
@@ -70,7 +79,7 @@
 }
 
 .btn-secondary {
-  background-color: #6c757d;
+  background-color: #383832 ;
 }
 
 .btn i,
@@ -104,28 +113,28 @@
 }
 
 .save-icon{
-    background: url('../../assets/save-icon.png');
+    background: url('../../assets/save_2.png');
   height: 20px;
   width: 20px;
   background-size: cover;
   flex-shrink: 0;
 }
 .clear-icon{
-    background: url('../../assets/clear-icon.png');
+    background: url('../../assets/clear_2.png');
   height: 20px;
   width: 20px;
   background-size: cover;
   flex-shrink: 0;
 }
 .export-icon{
-    background: url('../../assets/export-icon.png');
+    background: url('../../assets/export_2.png');
   height: 20px;
   width: 20px;
   background-size: cover;
   flex-shrink: 0;
 }
 .import-icon{
-    background: url('../../assets/import2.png');
+    background: url('../../assets/import_3.png');
   height: 20px;
   width: 20px;
   background-size: cover;

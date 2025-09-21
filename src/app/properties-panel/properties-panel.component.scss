@@ -1,5 +1,6 @@
 .properties-panel {
-  background: rgba(255, 255, 255, 0.95);
+  // background: rgba(255, 255, 255, 0.95);
+  background: #121212;
   border-radius: 15px;
   padding: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
@@ -8,8 +9,8 @@
     width: 93% !important;
   }
 
-  h3 {
-    color: #333;
+  span {
+    color: darkgray;
     margin-bottom: 15px;
     font-size: 18px;
   }
@@ -21,7 +22,6 @@
 
   .widget-properties {
     h4 {
-      color: #2d3748;
       margin-bottom: 15px;
       font-size: 16px;
     }
@@ -31,18 +31,19 @@
 
       label {
         display: block;
-        color: #4a5568;
         font-size: 12px;
         margin-bottom: 5px;
         font-weight: 600;
       }
 
-      input, select {
+      input,
+      select {
         width: 100%;
         padding: 8px;
         border: 1px solid #cbd5e0;
         border-radius: 4px;
         font-size: 14px;
+        background: #f7f7f1;
       }
 
       .image-info {
@@ -71,8 +72,11 @@
       }
 
       &.btn-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        // background: linear-gradient(148deg, #262020 57%, #C0C0C0 151%);
+        border: 1px solid #f7f7f1;
         color: white;
+        transition: none;
+        animation: none;
       }
 
       &.btn-secondary {
@@ -99,79 +103,98 @@
     }
   }
 }
+.properties-icon {
+  display: flex;
+  background-image: url("../../assets/properties_2.png");
+  background-size: cover;
+  width: 24px;
+  height: 24px;
+}
 
 
-.json-data{
-  margin-top: 10px;
-  background: rgba(255, 255, 255, 0.95);
+.json-data {
+  margin-top: 20px;
+  // background: rgba(255, 255, 255, 0.95);
+  background: #121212;
   border-radius: 15px;
   padding: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
+
 .json-preview {
-      background: #2d3748;
-      color: #e2e8f0;
-      padding: 10px;
-      border-radius: 4px;
-      font-family: monospace;
-      font-size: 12px;
-      margin: 10px 0;
-      white-space: pre-wrap;
-      max-height: 120px;
-      overflow-y: auto;
-    }
-        .btn {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 600;
-      transition: all 0.3s ease;
-      margin-bottom: 10px;
+  background: #d2dadc;
+  color: black;
+  padding: 10px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 12px;
+  margin: 10px 0;
+  white-space: pre-wrap;
+  max-height: 120px;
+  overflow-y: auto;
+}
 
-      &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-      }
+.btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  margin-bottom: 10px;
+      transition: background-color 0.2s, color 0.2s;
 
-      &.btn-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-      }
+  
 
-      &.btn-secondary {
-        background: #48bb78;
-        color: white;
-      }
+  &.btn-primary {
+    // background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #262020;
+    color: white;
+    border: 1px solid #f7f7f1;
 
-      &.full-width {
-        width: 100%;
-      }
-    }
+    &:hover, &:focus {
+    // transform: translateY(-2px);
+  //   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  background-color: #969392;         /* Slightly darker bg on hover */
+  color: #222;                       /* Even darker text color on hover */
+  border-color: #969392;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
 
-    .success-message {
-  margin-top: 0.5rem;
-  color: #155724;
-  background: #d4edda;
-  border: 1px solid #c3e6cb;
+  }
+
+  &.btn-secondary {
+    background: #48bb78;
+    color: white;
+  }
+
+  &.full-width {
+    width: 100%;
+  }
+}
+
+.success-message {
   padding: 0.5rem 1rem;
   border-radius: 6px;
   font-size: 0.9rem;
   animation: fadeOut 0.5s ease forwards;
-  animation-delay: 3.5s; /* start fading near the end */
+  animation-delay: 3.5s;
+  font-style: italic;
+
+  /* start fading near the end */
 }
 
 .info-message {
-  margin-top: 0.5rem;
-  color: black;
-  background: lightgrey;
-  border: 1px solid #c3e6cb;
+  color: #f7f7f1;
   padding: 0.5rem 1rem;
   border-radius: 6px;
   font-size: 0.9rem;
   animation: fadeOut 0.5s ease forwards;
-  animation-delay: 3.5s; /* start fading near the end */
+  animation-delay: 3.5s;
+  font-style: italic;
+  display: flex;
+  justify-content: center;
+  /* start fading near the end */
 }
 
 @keyframes fadeOut {
@@ -179,4 +202,27 @@
     opacity: 0;
     transform: translateY(-5px);
   }
+}
+
+.properties-panel {
+  background: #121212;
+  border-radius: 15px;
+  padding: 20px;
+  /* Silver 3D-like shadow, concentrated at the bottom */
+  box-shadow:
+    0 12px 28px -10px rgba(192,192,192,0.35),    /* stronger silver 'glow' at the bottom */
+    0 3px 20px 0 rgba(255,255,255,0.08),          /* subtle white shine for depth */
+    0 2px 0 0 rgba(255,255,255,0.07);             /* gentle top highlight for 3d edge */
+}
+
+.properties-panel, .json-data {
+  background: #121212;
+  border-radius: 15px;
+  padding: 20px;
+  /* Silver 3D-like shadow, concentrated at the bottom */
+  box-shadow:
+    0 12px 28px -10px rgba(192,192,192,0.35),    /* stronger silver 'glow' at the bottom */
+    0 3px 20px 0 rgba(255,255,255,0.08),          /* subtle white shine for depth */
+    0 2px 0 0 rgba(255,255,255,0.07); 
+    border: 1px solid #f7f7f1;
 }
