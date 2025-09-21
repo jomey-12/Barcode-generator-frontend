@@ -8,22 +8,16 @@
     <div class="dialog-body">
       <p class="warning">Please save the template or select existing template before proceeding.</p>
       <p>Step 1: Upload product details spreadsheet for the current template
-              <a class="link" href="#" (click)="downloadSample()">
+        <a class="link" href="#" (click)="downloadSample()">
           Download Sample .xlsx here
         </a>
       </p>
 
       <div class="top-action-grid">
-          <input
-            type="file"
-            accept=".xlsx,.xls"
-            (change)="onFileSelect($event)"
-            #fileInput
-            hidden
-          />
-          <button class="btn btn-primary choose-file" (click)="fileInput.click()">Choose Excel File</button>
-          <div class="file-info" *ngIf="selectedFile">Selected: {{ selectedFile.name }}</div>
-        </div>
+        <input type="file" accept=".xlsx,.xls" (change)="onFileSelect($event)" #fileInput hidden />
+        <button class="btn btn-primary choose-file" (click)="fileInput.click()">Choose Excel File</button>
+        <div class="file-info" *ngIf="selectedFile">Selected: {{ selectedFile.name }}</div>
+      </div>
 
       <div class="upload-section" *ngIf="showImageUpload">
         <p>Step 2: Upload Product Images</p>
@@ -37,24 +31,9 @@
             </label>
             <div class="icon-button">
               <button class="icon-btn" aria-describedby="tooltip">
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  aria-hidden="true"
-                  focusable="false"
-                >
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true" focusable="false">
                   <circle cx="10" cy="10" r="9" stroke="#333" stroke-width="2" fill="#f0f0f0" />
-                  <line
-                    x1="10"
-                    y1="6"
-                    x2="10"
-                    y2="12"
-                    stroke="#333"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                  />
+                  <line x1="10" y1="6" x2="10" y2="12" stroke="#333" stroke-width="2" stroke-linecap="round" />
                   <circle cx="10" cy="15" r="1" fill="#333" />
                 </svg>
               </button>
@@ -67,35 +46,15 @@
           </div>
           <div class="tooltip-container">
             <label class="radio-label">
-              <input
-                type="radio"
-                value="sequential"
-                name="imageMapping"
-                [(ngModel)]="imageMapping"
-              />
+              <input type="radio" value="sequential" name="imageMapping" [(ngModel)]="imageMapping" />
               Sequential
             </label>
 
             <div class="icon-button">
               <button class="icon-btn" aria-describedby="tooltip">
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  aria-hidden="true"
-                  focusable="false"
-                >
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true" focusable="false">
                   <circle cx="10" cy="10" r="9" stroke="#333" stroke-width="2" fill="#f0f0f0" />
-                  <line
-                    x1="10"
-                    y1="6"
-                    x2="10"
-                    y2="12"
-                    stroke="#333"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                  />
+                  <line x1="10" y1="6" x2="10" y2="12" stroke="#333" stroke-width="2" stroke-linecap="round" />
                   <circle cx="10" cy="15" r="1" fill="#333" />
                 </svg>
               </button>
@@ -107,27 +66,20 @@
           </div>
         </div>
 
-        <input
-          type="file"
-          accept="image/*"
-          multiple
-          (change)="onImagesSelect($event)"
-          #imageInput
-          hidden
-        />
+        <input type="file" accept="image/*" multiple (change)="onImagesSelect($event)" #imageInput hidden />
         <div class="upload-image">
           <button class="btn btn-primary choose-file" (click)="imageInput.click()">Choose Multiple Images</button>
           <div class="file-info" *ngIf="selectedImages && selectedImages.length > 0">
             Selected: {{ selectedImages.length }} image{{ selectedImages.length > 1 ? 's' : '' }}
           </div>
         </div>
-        
+
       </div>
-      
+
     </div>
     <div class="preview-wrap">
-<p class="preview-text" *ngIf="previewData.length > 0">Preview Data</p>
-    <div class="preview-section" *ngIf="previewData.length > 0">
+      <p class="preview-text" *ngIf="previewData.length > 0">Preview Data</p>
+      <div class="preview-section" *ngIf="previewData.length > 0">
         <div class="table-container scrollable">
           <table>
             <thead>
@@ -139,34 +91,22 @@
               <tr *ngFor="let row of previewData.slice(0, 3)">
                 <td *ngFor="let cell of row; let i = index">
                   <span *ngIf="!imageColumnMappings[headerLabels[i]] || false">{{ cell }}</span>
-                  <img
-                    *ngIf="(imageColumnMappings[headerLabels[i]] || false) && cell"
-                    [src]="cell"
-                    style="width: 40px; height: 40px; object-fit: cover"
-                    alt="preview"
-                  />
-                  <span
-                    *ngIf="(imageColumnMappings[headerLabels[i]] || false) && !cell"
-                    class="no-image"
-                    >Empty</span
-                  >
+                  <img *ngIf="(imageColumnMappings[headerLabels[i]] || false) && cell" [src]="cell"
+                    style="width: 40px; height: 40px; object-fit: cover" alt="preview" />
+                  <span *ngIf="(imageColumnMappings[headerLabels[i]] || false) && !cell" class="no-image">Empty</span>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
-    <div class="dialog-actions">
-      <button
-        class="btn btn-primary"
-        (click)="confirmImport()"
-        [disabled]="previewData.length === 0"
-      >
-        Generate & Save PDF
-      </button>
-      <button class="btn btn-secondary" (click)="close()">Cancel</button>
+      <div class="dialog-actions">
+        <button class="btn btn-primary" (click)="confirmImport()" [disabled]="previewData.length === 0">
+          Generate & Save PDF
+        </button>
+        <button class="btn btn-secondary" (click)="close()">Cancel</button>
+      </div>
     </div>
-  </div>
 
-    </div>
-    </div>
+  </div>
+</div>

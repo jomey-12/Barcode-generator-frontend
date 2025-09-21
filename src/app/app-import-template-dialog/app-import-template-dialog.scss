@@ -168,8 +168,8 @@
       }
 
       &:not(:disabled):hover {
-        background-color: #969392;         /* Slightly darker bg on hover */
-  color: #222;                       /* Even darker text color on hover */
+        background-color: #969392;       
+  color: #222;                       
   border-color: #969392;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
       }
@@ -198,16 +198,13 @@
   
 
   &.btn-primary {
-    // background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     background: #262020;
     color: white;
     border: 1px solid #f7f7f1;
 
     &:hover, &:focus {
-    // transform: translateY(-2px);
-  //   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-  background-color: #969392;         /* Slightly darker bg on hover */
-  color: #222;                       /* Even darker text color on hover */
+  background-color: #969392;         
+  color: #222;                      
   border-color: #969392;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
   }
@@ -270,8 +267,8 @@
 
 .close-btn:hover,
 .close-btn:focus {
-  background-color: #e5e7eb;         /* Slightly darker bg on hover */
-  color: #222;                       /* Even darker text color on hover */
+  background-color: #e5e7eb;         
+  color: #222;                     
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
@@ -306,9 +303,7 @@
   margin: 0.2rem;
 }
 
-.btn-primary {
-  // background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  // background: linear-gradient(148deg, #262020 57%, #C0C0C0 151%); 
+.btn-primary { 
   background: #262020;
         border: 1px solid #f7f7f1;
   border-radius: 12px;
@@ -319,10 +314,8 @@
   width: 200px;
 }
   .btn-primary:hover, .btn-primary:focus {
-    // transform: translateY(-2px);
-  //   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-  background-color: #969392;         /* Slightly darker bg on hover */
-  color: #222;                       /* Even darker text color on hover */
+  background-color: #969392;        
+  color: #222;                       
   border-color: #969392;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
   }
@@ -374,7 +367,6 @@ td {
   }
 }
 
-/////////////////////////////////////////////////
 .top-action-grid {
       display: flex;
     gap: 1rem;
@@ -400,10 +392,9 @@ td {
 
 .radio-label input[type='radio'] {
   margin-right: 0.5rem;
-  accent-color: white; /* modern browsers */
+  accent-color: white; 
 }
 
-/* For older browsers or more control */
 
 input[type="radio"] {
   width: 16px;
@@ -556,7 +547,6 @@ input[type="radio"]:checked::before {
   font-size: 0.8rem;
   animation: fadeOut 0.5s ease forwards;
   animation-delay: 3.5s;
-  /* start fading near the end */
 }
 
 .upload-image {
