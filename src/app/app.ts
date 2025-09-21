@@ -126,6 +126,11 @@ export class AppComponent implements OnInit {
       orientation: savedData?.orientation || 'horizontal',
       hasQr: savedData?.hasQr || false,
       qrData: savedData?.qrData || '',
+
+      descriptionLabelText: savedData?.labelText || 'Label',
+      descriptionInputValue: savedData?.inputValue || '',
+      descriptionHideLabel: savedData?.hideLabel || false,
+      descriptionLabelPosition: savedData?.labelPosition || 'left',
     };
     return widget;
   }
@@ -133,8 +138,9 @@ export class AppComponent implements OnInit {
   private getDefaultWidth(type: WidgetType): number {
     const widthMap = {
       separator: 200,
-      'labeled-input': 250,
+      'labeled-input': 260,
       'qr-code': 100,
+      'description-input': 260,
       image: 200,
       barcode: 150,
     };

@@ -1,4 +1,4 @@
-export type WidgetType = 'labeled-input' | 'barcode' | 'image' | 'separator' | 'qr-code';
+export type WidgetType = 'labeled-input' | 'barcode' | 'image' | 'separator' | 'qr-code' | 'description-input';
 
 export type LabelPosition = 'left' | 'right' | 'top' | 'bottom';
 
@@ -38,6 +38,11 @@ export interface Widget {
 
   hasQr?: boolean;
   qrData?: string;
+
+  descriptionLabelText?: string;
+  descriptionInputValue?: string;
+  descriptionHideLabel?: boolean;
+  descriptionLabelPosition?: LabelPosition;
 }
 
 export interface Template {

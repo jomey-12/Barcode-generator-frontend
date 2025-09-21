@@ -38,7 +38,7 @@
   </div>
 
 <!-- QR Code Widget -->
-<div *ngIf="widget.type === 'qr-code'" class="widget-barcode">
+<div *ngIf="widget.type === 'qr-code'" class="widget-qrcode">
   <div *ngIf="!widget.hasQr" >
     🔳 QR Code Placeholder<br><small>Configure properties to generate</small>
   </div>
@@ -94,6 +94,32 @@
   (input)="onInputChange($event)"
   (click)="$event.stopPropagation()"
 ></textarea>
+  </div>
+
+
+    <!--Description Labeled Input Widget -->
+  <div
+    *ngIf="widget.type === 'description-input'"
+    class="labeled-input-container"
+    id="labeled-input-container"
+    [class]="'position-' + widget.labelPosition"
+  >
+    <div
+      class="widget-label"
+      [class.hidden]="widget.hideLabel"
+    >
+      {{widget.descriptionLabelText}}
+    </div>
+   
+<input
+  id="textarea"
+  type="text"
+  class="widget-input"
+  [value]="widget.descriptionInputValue"
+  (input)="onInputChange($event)"
+  (click)="$event.stopPropagation()"
+/>
+
   </div>
 
 
