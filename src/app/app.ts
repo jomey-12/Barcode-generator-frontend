@@ -357,6 +357,7 @@ handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
 
   updateJsonPreview() {
     const labeledInputs = this.widgets.filter((w) => w.type === 'labeled-input');
+    const descriptionInputs = this.widgets.filter((w) => w.type === 'description-input');
     const jsonData: any = {
       productId: this.selectedWidget?.productId || '',
       timestamp: new Date().toISOString(),
@@ -366,6 +367,12 @@ handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
     labeledInputs.forEach((widget) => {
       if (widget.labelText) {
         jsonData[widget.labelText] = widget.inputValue ?? null;
+      }
+    });
+
+    descriptionInputs.forEach((widget) => {
+      if (widget.descriptionLabelText) {
+        jsonData[widget.descriptionLabelText] = widget.descriptionInputValue ?? null;
       }
     });
 
