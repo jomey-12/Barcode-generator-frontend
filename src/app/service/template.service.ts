@@ -299,6 +299,23 @@ export class TemplateService {
   }, 100); // Small delay to ensure CSS is applied
 }
 
+  generateCode128ProductId(): string {
+    // Generate 3 random uppercase letters
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    let alphabetPart = '';
+    for (let i = 0; i < 3; i++) {
+      alphabetPart += letters.charAt(Math.floor(Math.random() * letters.length));
+    }
+    
+    // Generate 5 random digits
+    let digitPart = '';
+    for (let i = 0; i < 5; i++) {
+      digitPart += Math.floor(Math.random() * 10).toString();
+    }
+    
+    return alphabetPart + digitPart;
+  }
+
   async exportMultipleTemplatesWithProducts(template: Template, products: any[], templateName: string) {
     const pdf = new jsPDF({
       orientation: 'p',
@@ -623,7 +640,8 @@ export class TemplateService {
         element.style.color = '#718096';
         element.style.flexDirection = 'column';
         
-        if (widget.hasBarcode && widget.productId) {
+        if (widget.hasBarcode) {
+          widget.productId = this.generateCode128ProductId();
           // Remove border when barcode is present
           element.style.border = 'none';
           

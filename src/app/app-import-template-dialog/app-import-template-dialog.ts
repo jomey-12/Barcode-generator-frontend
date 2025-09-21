@@ -29,7 +29,7 @@ export class ImportTemplateDialogComponent {
       const jsonObject = JSON.parse(this.jsonPreview);
 
       // Get all keys except 'timestamp'
-      this.headerLabels = Object.keys(jsonObject).filter(key => key !== 'timestamp');
+      this.headerLabels = Object.keys(jsonObject).filter(key => key !== 'timestamp' && key !== 'productId');
     }
   } catch (e) {
     console.warn('Failed to parse jsonPreview:', e);

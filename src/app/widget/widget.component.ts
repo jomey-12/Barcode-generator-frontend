@@ -14,7 +14,7 @@ import { FormsModule } from '@angular/forms';
   imports: [CommonModule, BarcodeDirective, DragDropModule, FormsModule],
   styleUrls: ['./widget.component.scss']
 })
-export class WidgetComponent implements AfterViewInit {
+export class WidgetComponent {
   @Input() widget!: Widget;
   @Input() isSelected!: boolean;
 
@@ -34,13 +34,6 @@ export class WidgetComponent implements AfterViewInit {
   startTop = 0;
 
   constructor(private elementRef: ElementRef) {}
-
-  ngAfterViewInit() {
-    // Generate barcode if needed
-    if (this.widget.type === 'barcode' && this.widget.hasBarcode && this.widget.productId) {
-      this.generateBarcodeForWidget();
-    }
-  }
 
   onSelect(event: Event) {
     event.stopPropagation();
@@ -240,23 +233,5 @@ private resizeHandler(event: MouseEvent) {
   onInputChange(event: Event) {
     const target = event.target as HTMLInputElement;
     this.widget.inputValue = target.value;
-  }
-
-  private generateBarcodeForWidget() {
-    setTimeout(() => {
-      const svgElement = this.elementRef.nativeElement.querySelector(`#barcode-${this.widget.id}`);
-      if (svgElement && (window as any).JsBarcode) {
-        try {
-          (window as any).JsBarcode(svgElement, this.widget.productId, {
-            format: 'CODE128',
-            width: 2,
-            height: 50,
-            displayValue: true
-          });
-        } catch (e) {
-          console.error('Barcode generation error:', e);
-        }
-      }
-    }, 100);
   }
 }
