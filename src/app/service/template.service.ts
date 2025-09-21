@@ -396,6 +396,13 @@ export class TemplateService {
           }
         }
 
+         if (widget.type === 'description-input' && widget.descriptionLabelText) {
+          // Map labelled-input widget inputValue from product JSON by labelName
+          if (product.hasOwnProperty(widget.descriptionLabelText)) {
+            widget.descriptionInputValue = product[widget.descriptionLabelText];
+          }
+        }
+
         if (widget.type === 'image') {
           // Enhanced multi-image mapping logic
           let imageData = '';
@@ -656,14 +663,14 @@ if (widget.type === 'qr-code') {
         input.style.fontSize = '14px';
         input.style.background = 'white';
         input.style.width = '100%';
-        input.style.minHeight = '20px';
+        input.style.minHeight = '60px';
         input.style.wordWrap = 'break-word';
         container.appendChild(input);
         
         element.appendChild(container);
         break;
 
-        case 'description-input':
+case 'description-input':
   // Create container with proper positioning
   const descContainer = document.createElement('div');
   descContainer.style.display = 'flex';
@@ -700,22 +707,23 @@ if (widget.type === 'qr-code') {
     descContainer.appendChild(descLabel);
   }
 
-  // Create description field (multi-line text block)
-  const descInput = document.createElement('div');
-  descInput.textContent = widget.descriptionInputValue || '';
+  // ✅ Create input field (not textarea)
+  const descInput = document.createElement('input');
+  descInput.type = 'text';
+  descInput.value = widget.descriptionInputValue || '';
   descInput.style.padding = '8px';
   descInput.style.border = '1px solid #cbd5e0';
   descInput.style.borderRadius = '4px';
   descInput.style.fontSize = '14px';
   descInput.style.background = 'white';
   descInput.style.width = '100%';
-  descInput.style.minHeight = '40px';  // taller than input
-  descInput.style.wordWrap = 'break-word';
-  descInput.style.whiteSpace = 'pre-wrap'; // allow line breaks
+  descInput.style.minHeight = '20px';  // keep height consistent with design
+
   descContainer.appendChild(descInput);
 
   element.appendChild(descContainer);
   break;
+
 
 
       case 'separator':

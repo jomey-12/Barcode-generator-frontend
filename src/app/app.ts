@@ -127,10 +127,10 @@ export class AppComponent implements OnInit {
       hasQr: savedData?.hasQr || false,
       qrData: savedData?.qrData || '',
 
-      descriptionLabelText: savedData?.labelText || 'Label',
-      descriptionInputValue: savedData?.inputValue || '',
-      descriptionHideLabel: savedData?.hideLabel || false,
-      descriptionLabelPosition: savedData?.labelPosition || 'left',
+      descriptionLabelText: savedData?.descriptionLabelText || 'Label',
+      descriptionInputValue: savedData?.descriptionInputValue || '',
+      descriptionHideLabel: savedData?.descriptionHideLabel || false,
+      descriptionLabelPosition: savedData?.labelPosition|| 'left',
     };
     return widget;
   }
@@ -284,7 +284,10 @@ handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
         productId: undefined,
         imageData: undefined,
         imageName: undefined,
-        hasBarcode: undefined
+        hasBarcode: undefined,
+        qrData: undefined,
+        hasQr: undefined,
+        descriptionInputValue: undefined,
       }))
     };
 
@@ -354,6 +357,7 @@ handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
   clearCanvas() {
     this.widgets = [];
     this.selectedWidget = null;
+    this.updateJsonPreview();
   }
 
   exportTemplate() {
