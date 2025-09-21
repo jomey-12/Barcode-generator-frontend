@@ -1,5 +1,30 @@
-.layout { display: flex; height: 100vh; }
-.sidebar, .properties { width: 220px; padding: 10px; background: #f4f4f4; border-right: 1px solid #ccc; }
-.canvas { flex: 1; position: relative; background: #fff; }
-.widget { position: absolute; border: 1px solid #aaa; background: white; padding: 5px; cursor: pointer; }
-.widget.selected { border: 2px solid blue; }
+.layout {
+    display: flex;
+    height: 100vh;
+}
+
+.sidebar,
+.properties {
+    width: 220px;
+    padding: 10px;
+    background: #f4f4f4;
+    border-right: 1px solid #ccc;
+}
+
+.canvas {
+    flex: 1;
+    position: relative;
+    background: #fff;
+}
+
+.widget {
+    position: absolute;
+    border: 1px solid #aaa;
+    background: white;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.widget.selected {
+    border: 2px solid blue;
+}

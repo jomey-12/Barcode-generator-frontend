@@ -12,69 +12,56 @@ export class TemplateService {
   private readonly STORAGE_KEY = 'templates';
   public widgets: WritableSignal<Widget[]> = signal<Widget[]>([]);
 
-  // exportTemplate(template: Template, templateName: string) {
-  //   const dataStr = JSON.stringify(template, null, 2);
-  //   const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-  //   const exportFileDefaultName = templateName.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '_template.json';
-
-  //   const linkElement = document.createElement('a');
-  //   linkElement.setAttribute('href', dataUri);
-  //   linkElement.setAttribute('download', exportFileDefaultName);
-  //   linkElement.click();
-  // }
-
-  exportTemplate(templateName: string) {
+  public exportTemplate(templateName: string) {
     const element = document.getElementById('canvas-container');
 
-  if (!element) {
-    console.error('Template canvas not found');
-    return;
-  }
-  
-  const canvasElement = document.getElementById('canvas') as HTMLElement;
-  const inputElement = document.getElementById('textarea') as HTMLElement;
-  const separatorElement = document.getElementById('widget-separator') as HTMLElement;
+    if (!element) {
+      console.error('Template canvas not found');
+      return;
+    }
 
-  // Save original styles
-  const originalBorder = canvasElement.style.border;
-  let inputElementOriginalBorder: string | undefined;
+    const canvasElement = document.getElementById('canvas') as HTMLElement;
+    const inputElement = document.getElementById('textarea') as HTMLElement;
+    const separatorElement = document.getElementById('widget-separator') as HTMLElement;
 
-  if (inputElement) {
-    inputElementOriginalBorder = inputElement.style.border;
-  }
+    // Save original styles
+    const originalBorder = canvasElement.style.border;
+    let inputElementOriginalBorder: string | undefined;
 
-  // Get all selected widgets and store their transform info
-  const selectedWidgets = Array.from(
-    document.querySelectorAll<HTMLElement>('.dropped-widget')
-  );
+    if (inputElement) {
+      inputElementOriginalBorder = inputElement.style.border;
+    }
 
-  // Store and enhance widget transform data
-  const widgetTransformData = selectedWidgets.map(widget => {
-    const computedStyle = window.getComputedStyle(widget);
-    const currentTransform = widget.style.transform || computedStyle.transform;
-    const transformOrigin = widget.style.transformOrigin || computedStyle.transformOrigin;
-    
-    return {
+    // Get all selected widgets and store their transform info
+    const selectedWidgets = Array.from(document.querySelectorAll<HTMLElement>('.dropped-widget'));
+
+    // Store and enhance widget transform data
+    const widgetTransformData = selectedWidgets.map((widget) => {
+      const computedStyle = window.getComputedStyle(widget);
+      const currentTransform = widget.style.transform || computedStyle.transform;
+      const transformOrigin = widget.style.transformOrigin || computedStyle.transformOrigin;
+
+      return {
+        element: widget,
+        originalTransform: currentTransform,
+        originalTransformOrigin: transformOrigin,
+        computedTransform: computedStyle.transform,
+      };
+    });
+
+    // Save original widget styles (simplified since we're using CSS rule)
+    const originalWidgetStyles = selectedWidgets.map((widget, index) => ({
       element: widget,
-      originalTransform: currentTransform,
-      originalTransformOrigin: transformOrigin,
-      computedTransform: computedStyle.transform
-    };
-  });
+      transform: widget.style.transform,
+      transformOrigin: widget.style.transformOrigin,
+      willChange: widget.style.willChange,
+      backfaceVisibility: widget.style.backfaceVisibility,
+    }));
 
-  // Save original widget styles (simplified since we're using CSS rule)
-  const originalWidgetStyles = selectedWidgets.map((widget, index) => ({
-    element: widget,
-    transform: widget.style.transform,
-    transformOrigin: widget.style.transformOrigin,
-    willChange: widget.style.willChange,
-    backfaceVisibility: widget.style.backfaceVisibility
-  }));
-
-  // Remove borders temporarily for PDF generation only
-  const tempStyle = document.createElement('style');
-  tempStyle.id = 'temp-export-style';
-  tempStyle.innerHTML = `
+    // Remove borders temporarily for PDF generation only
+    const tempStyle = document.createElement('style');
+    tempStyle.id = 'temp-export-style';
+    tempStyle.innerHTML = `
     .dropped-widget {
       border: none !important;
       box-shadow: none !important;
@@ -86,221 +73,234 @@ export class TemplateService {
       outline: none !important;
     }
   `;
-  document.head.appendChild(tempStyle);
+    document.head.appendChild(tempStyle);
 
-  // Get delete widgets
-  const deleteWidgets = Array.from(
-    document.querySelectorAll<HTMLElement>('.delete-widget')
-  );
+    const deleteWidgets = Array.from(document.querySelectorAll<HTMLElement>('.delete-widget'));
 
-  const originalDeleteWidgetStyles = deleteWidgets.map(widget => ({
-    element: widget,
-    display: widget.style.display,
-  }));
+    const originalDeleteWidgetStyles = deleteWidgets.map((widget) => ({
+      element: widget,
+      display: widget.style.display,
+    }));
 
-  // Apply styles for capture
-  canvasElement.style.setProperty('border', 'none', 'important');
-  if (inputElement) {
-    inputElement.style.setProperty('border', 'none', 'important');
+    canvasElement.style.setProperty('border', 'none', 'important');
+    if (inputElement) {
+      inputElement.style.setProperty('border', 'none', 'important');
+    }
+
+    // Hide delete widgets
+    deleteWidgets.forEach((widget) => {
+      widget.style.setProperty('display', 'none', 'important');
+    });
+
+    // Ensure transforms are properly set for html2canvas capture
+    selectedWidgets.forEach((widget, index) => {
+      const transformData = widgetTransformData[index];
+
+      if (transformData.originalTransform && transformData.originalTransform !== 'none') {
+        widget.style.setProperty('transform', transformData.originalTransform, 'important');
+
+        if (
+          transformData.originalTransformOrigin &&
+          transformData.originalTransformOrigin !== '50% 50%'
+        ) {
+          widget.style.setProperty(
+            'transform-origin',
+            transformData.originalTransformOrigin,
+            'important'
+          );
+        } else {
+          widget.style.setProperty('transform-origin', 'center center', 'important');
+        }
+
+        widget.style.setProperty('will-change', 'transform', 'important');
+        widget.style.setProperty('backface-visibility', 'visible', 'important');
+      }
+    });
+
+    // Force multiple reflows and wait for styles to apply
+    element.offsetHeight;
+    element.offsetWidth;
+
+    // Wait a moment for styles to fully apply
+    setTimeout(() => {
+      html2canvas(element, {
+        useCORS: true,
+        allowTaint: true,
+        scale: 2,
+        logging: true,
+        scrollX: 0,
+        scrollY: 0,
+        foreignObjectRendering: false,
+        ignoreElements: (element) => {
+          return element.classList.contains('delete-widget');
+        },
+        onclone: (clonedDoc, clonedElement) => {
+          const originalTextareas = element.querySelectorAll('textarea');
+          const clonedTextareas = clonedDoc.querySelectorAll('textarea');
+
+          originalTextareas.forEach((originalTextarea, index) => {
+            if (clonedTextareas[index]) {
+              const textarea = originalTextarea as HTMLTextAreaElement;
+              const clonedTextarea = clonedTextareas[index] as HTMLTextAreaElement;
+
+              const div = clonedDoc.createElement('div');
+
+              const computedStyle = window.getComputedStyle(textarea);
+              for (let i = 0; i < computedStyle.length; i++) {
+                const property = computedStyle[i];
+                div.style.setProperty(property, computedStyle.getPropertyValue(property));
+              }
+
+              div.textContent = textarea.value;
+
+              div.style.setProperty('white-space', 'pre-wrap', 'important');
+              div.style.setProperty('word-wrap', 'break-word', 'important');
+              div.style.setProperty('overflow', 'hidden', 'important');
+
+              if (clonedTextarea.parentNode) {
+                clonedTextarea.parentNode.replaceChild(div, clonedTextarea);
+              }
+            }
+          });
+
+          const clonedWidgets = clonedDoc.querySelectorAll('.dropped-widget');
+          clonedWidgets.forEach((clonedWidget, index) => {
+            if (index < widgetTransformData.length) {
+              const transformData = widgetTransformData[index];
+
+              if (transformData.originalTransform && transformData.originalTransform !== 'none') {
+                (clonedWidget as HTMLElement).style.setProperty(
+                  'transform',
+                  transformData.originalTransform,
+                  'important'
+                );
+
+                const transformOrigin = transformData.originalTransformOrigin || 'center center';
+                (clonedWidget as HTMLElement).style.setProperty(
+                  'transform-origin',
+                  transformOrigin,
+                  'important'
+                );
+
+                // Additional properties for better rendering
+                (clonedWidget as HTMLElement).style.setProperty(
+                  'will-change',
+                  'transform',
+                  'important'
+                );
+                (clonedWidget as HTMLElement).style.setProperty(
+                  'backface-visibility',
+                  'visible',
+                  'important'
+                );
+                (clonedWidget as HTMLElement).style.setProperty(
+                  'perspective',
+                  '1000px',
+                  'important'
+                );
+              }
+            }
+          });
+        },
+      })
+        .then((canvas) => {
+          // IMPORTANT: Remove temporary style to restore original borders on screen
+          const tempStyleElement = document.getElementById('temp-export-style');
+          if (tempStyleElement) {
+            tempStyleElement.remove();
+          }
+
+          canvasElement.style.setProperty('border', originalBorder || '', 'important');
+          if (inputElement) {
+            inputElement.style.setProperty('border', inputElementOriginalBorder || '', 'important');
+          }
+
+          originalWidgetStyles.forEach(
+            ({ element, transform, transformOrigin, willChange, backfaceVisibility }) => {
+              element.style.setProperty('transform', transform || '', 'important');
+              element.style.setProperty('transform-origin', transformOrigin || '', 'important');
+              element.style.setProperty('will-change', willChange || '', 'important');
+              element.style.setProperty(
+                'backface-visibility',
+                backfaceVisibility || '',
+                'important'
+              );
+            }
+          );
+
+          originalDeleteWidgetStyles.forEach(({ element, display }) => {
+            element.style.setProperty('display', display || '', 'important');
+          });
+
+          // Generate PDF
+          const imgData = canvas.toDataURL('image/png');
+          const pdf = new jsPDF({ orientation: 'p', unit: 'pt', format: 'a4' });
+
+          const pageWidth = pdf.internal.pageSize.getWidth();
+          const pageHeight = pdf.internal.pageSize.getHeight();
+          const imgWidth = pageWidth;
+          const imgHeight = (canvas.height * pageWidth) / canvas.width;
+
+          let position = 0;
+
+          if (imgHeight > pageHeight) {
+            let heightLeft = imgHeight;
+            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+
+            while (heightLeft > 0) {
+              position = heightLeft - imgHeight;
+              pdf.addPage();
+              pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+              heightLeft -= pageHeight;
+            }
+          } else {
+            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+          }
+
+          const exportFileDefaultName =
+            templateName.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '_template.pdf';
+
+          pdf.save(exportFileDefaultName);
+
+          console.log('PDF exported successfully with preserved transforms and no borders in PDF');
+        })
+        .catch((error) => {
+          console.error('Error generating PDF:', error);
+
+          // IMPORTANT: Remove temporary style even if there's an error to restore borders
+          const tempStyleElement = document.getElementById('temp-export-style');
+          if (tempStyleElement) {
+            tempStyleElement.remove();
+          }
+
+          // Restore styles even if there's an error
+          canvasElement.style.setProperty('border', originalBorder || '', 'important');
+          if (inputElement) {
+            inputElement.style.setProperty('border', inputElementOriginalBorder || '', 'important');
+          }
+
+          originalWidgetStyles.forEach(
+            ({ element, transform, transformOrigin, willChange, backfaceVisibility }) => {
+              element.style.setProperty('transform', transform || '', 'important');
+              element.style.setProperty('transform-origin', transformOrigin || '', 'important');
+              element.style.setProperty('will-change', willChange || '', 'important');
+              element.style.setProperty(
+                'backface-visibility',
+                backfaceVisibility || '',
+                'important'
+              );
+            }
+          );
+
+          originalDeleteWidgetStyles.forEach(({ element, display }) => {
+            element.style.setProperty('display', display || '', 'important');
+          });
+        });
+    }, 100); // Small delay to ensure CSS is applied
   }
 
-  // Hide delete widgets
-  deleteWidgets.forEach(widget => {
-    widget.style.setProperty('display', 'none', 'important');
-  });
-
-  // Ensure transforms are properly set for html2canvas capture
-  selectedWidgets.forEach((widget, index) => {
-    const transformData = widgetTransformData[index];
-    
-    if (transformData.originalTransform && transformData.originalTransform !== 'none') {
-      // Ensure transform is applied as inline style (html2canvas reads this better)
-      widget.style.setProperty('transform', transformData.originalTransform, 'important');
-      
-      // Set transform-origin if not already set
-      if (transformData.originalTransformOrigin && transformData.originalTransformOrigin !== '50% 50%') {
-        widget.style.setProperty('transform-origin', transformData.originalTransformOrigin, 'important');
-      } else {
-        widget.style.setProperty('transform-origin', 'center center', 'important');
-      }
-      
-      // Additional properties that help with transform rendering
-      widget.style.setProperty('will-change', 'transform', 'important');
-      widget.style.setProperty('backface-visibility', 'visible', 'important');
-    }
-  });
-
-  // Force multiple reflows and wait for styles to apply
-  element.offsetHeight;
-  element.offsetWidth;
-  
-  // Wait a moment for styles to fully apply
-  setTimeout(() => {
-    html2canvas(element, {
-      useCORS: true,
-      allowTaint: true,
-      scale: 2,
-      logging: true,
-      scrollX: 0,
-      scrollY: 0,
-      // Better transform handling options
-      foreignObjectRendering: false,
-      ignoreElements: (element) => {
-        return element.classList.contains('delete-widget');
-      },
-      onclone: (clonedDoc, clonedElement) => {
-        // Replace textarea elements with divs containing their text values
-        const originalTextareas = element.querySelectorAll('textarea');
-        const clonedTextareas = clonedDoc.querySelectorAll('textarea');
-        
-        originalTextareas.forEach((originalTextarea, index) => {
-          if (clonedTextareas[index]) {
-            const textarea = originalTextarea as HTMLTextAreaElement;
-            const clonedTextarea = clonedTextareas[index] as HTMLTextAreaElement;
-            
-            // Create a div to replace the textarea
-            const div = clonedDoc.createElement('div');
-            
-            // Copy all styles from textarea to div
-            const computedStyle = window.getComputedStyle(textarea);
-            for (let i = 0; i < computedStyle.length; i++) {
-              const property = computedStyle[i];
-              div.style.setProperty(property, computedStyle.getPropertyValue(property));
-            }
-            
-            // Set the text content
-            div.textContent = textarea.value;
-            
-            // Ensure proper text rendering
-            div.style.setProperty('white-space', 'pre-wrap', 'important');
-            div.style.setProperty('word-wrap', 'break-word', 'important');
-            div.style.setProperty('overflow', 'hidden', 'important');
-            
-            // Replace the textarea with the div
-            if (clonedTextarea.parentNode) {
-              clonedTextarea.parentNode.replaceChild(div, clonedTextarea);
-            }
-          }
-        });
-
-        // Ensure transforms are properly applied in the cloned document
-        const clonedWidgets = clonedDoc.querySelectorAll('.dropped-widget');
-        clonedWidgets.forEach((clonedWidget, index) => {
-          if (index < widgetTransformData.length) {
-            const transformData = widgetTransformData[index];
-            
-            if (transformData.originalTransform && transformData.originalTransform !== 'none') {
-              (clonedWidget as HTMLElement).style.setProperty(
-                'transform', 
-                transformData.originalTransform, 
-                'important'
-              );
-              
-              // Ensure transform-origin is set
-              const transformOrigin = transformData.originalTransformOrigin || 'center center';
-              (clonedWidget as HTMLElement).style.setProperty(
-                'transform-origin', 
-                transformOrigin, 
-                'important'
-              );
-              
-              // Additional properties for better rendering
-              (clonedWidget as HTMLElement).style.setProperty('will-change', 'transform', 'important');
-              (clonedWidget as HTMLElement).style.setProperty('backface-visibility', 'visible', 'important');
-              (clonedWidget as HTMLElement).style.setProperty('perspective', '1000px', 'important');
-            }
-          }
-        });
-      }
-    }).then(canvas => {
-      // IMPORTANT: Remove temporary style to restore original borders on screen
-      const tempStyleElement = document.getElementById('temp-export-style');
-      if (tempStyleElement) {
-        tempStyleElement.remove();
-      }
-
-      // Restore all original styles
-      canvasElement.style.setProperty('border', originalBorder || '', 'important');
-      if (inputElement) {
-        inputElement.style.setProperty('border', inputElementOriginalBorder || '', 'important');
-      }
-
-      // Restore widget styles (simplified)
-      originalWidgetStyles.forEach(({ element, transform, transformOrigin, willChange, backfaceVisibility }) => {
-        element.style.setProperty('transform', transform || '', 'important');
-        element.style.setProperty('transform-origin', transformOrigin || '', 'important');
-        element.style.setProperty('will-change', willChange || '', 'important');
-        element.style.setProperty('backface-visibility', backfaceVisibility || '', 'important');
-      });
-
-      // Restore delete widgets
-      originalDeleteWidgetStyles.forEach(({ element, display }) => {
-        element.style.setProperty('display', display || '', 'important');
-      });
-
-      // Generate PDF
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF({ orientation: 'p', unit: 'pt', format: 'a4' });
-
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const pageHeight = pdf.internal.pageSize.getHeight();
-      const imgWidth = pageWidth;
-      const imgHeight = (canvas.height * pageWidth) / canvas.width;
-
-      let position = 0;
-
-      if (imgHeight > pageHeight) {
-        let heightLeft = imgHeight;
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-
-        while (heightLeft > 0) {
-          position = heightLeft - imgHeight;
-          pdf.addPage();
-          pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-          heightLeft -= pageHeight;
-        }
-      } else {
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      }
-
-      const exportFileDefaultName =
-        templateName.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '_template.pdf';
-
-      pdf.save(exportFileDefaultName);
-      
-      console.log('PDF exported successfully with preserved transforms and no borders in PDF');
-      
-    }).catch(error => {
-      console.error('Error generating PDF:', error);
-      
-      // IMPORTANT: Remove temporary style even if there's an error to restore borders
-      const tempStyleElement = document.getElementById('temp-export-style');
-      if (tempStyleElement) {
-        tempStyleElement.remove();
-      }
-      
-      // Restore styles even if there's an error
-      canvasElement.style.setProperty('border', originalBorder || '', 'important');
-      if (inputElement) {
-        inputElement.style.setProperty('border', inputElementOriginalBorder || '', 'important');
-      }
-      
-      originalWidgetStyles.forEach(({ element, transform, transformOrigin, willChange, backfaceVisibility }) => {
-        element.style.setProperty('transform', transform || '', 'important');
-        element.style.setProperty('transform-origin', transformOrigin || '', 'important');
-        element.style.setProperty('will-change', willChange || '', 'important');
-        element.style.setProperty('backface-visibility', backfaceVisibility || '', 'important');
-      });
-      
-      originalDeleteWidgetStyles.forEach(({ element, display }) => {
-        element.style.setProperty('display', display || '', 'important');
-      });
-    });
-  }, 100); // Small delay to ensure CSS is applied
-}
-
-  generateProductIdByFormat(format: string) {
+  public generateProductIdByFormat(format: string) {
     switch (format.toUpperCase()) {
       case 'EAN13':
         return this.generateNumericProductId(12, 'EAN13');
@@ -315,28 +315,28 @@ export class TemplateService {
     }
   }
 
-  generateAlphanumericProductId(): string {
+  public generateAlphanumericProductId(): string {
     // Generate 3 random uppercase letters
     const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     let alphabetPart = '';
     for (let i = 0; i < 3; i++) {
       alphabetPart += letters.charAt(Math.floor(Math.random() * letters.length));
     }
-    
+
     // Generate 5 random digits
     let digitPart = '';
     for (let i = 0; i < 5; i++) {
       digitPart += Math.floor(Math.random() * 10).toString();
     }
-    
+
     return alphabetPart + digitPart;
   }
 
   private generateNumericProductId(digitCount: number, type: string): string {
-    const digits = Array.from({length: digitCount}, () => 
+    const digits = Array.from({ length: digitCount }, () =>
       Math.floor(Math.random() * 10).toString()
     ).join('');
-    
+
     const checkDigit = this.calculateModulo10CheckDigit(digits, type);
     return digits + checkDigit;
   }
@@ -344,7 +344,7 @@ export class TemplateService {
   private calculateModulo10CheckDigit(digits: string, type: string): string {
     let oddSum = 0;
     let evenSum = 0;
-    
+
     if (type === 'EAN13') {
       // Odd positions (1,3,5...) = weight 1, Even positions (2,4,6...) = weight 3
       for (let i = 0; i < digits.length; i++) {
@@ -354,9 +354,8 @@ export class TemplateService {
           evenSum += parseInt(digits[i]);
         }
       }
-      const total = oddSum + (evenSum * 3);
+      const total = oddSum + evenSum * 3;
       return ((10 - (total % 10)) % 10).toString();
-      
     } else {
       // Odd positions (1,3,5...) = weight 3, Even positions (2,4,6...) = weight 1
       for (let i = 0; i < digits.length; i++) {
@@ -366,16 +365,20 @@ export class TemplateService {
           evenSum += parseInt(digits[i]);
         }
       }
-      const total = (oddSum * 3) + evenSum;
+      const total = oddSum * 3 + evenSum;
       return ((10 - (total % 10)) % 10).toString();
     }
   }
 
-  async exportMultipleTemplatesWithProducts(template: Template, products: any[], templateName: string) {
+  async exportMultipleTemplatesWithProducts(
+    template: Template,
+    products: any[],
+    templateName: string
+  ) {
     const pdf = new jsPDF({
       orientation: 'p',
       unit: 'pt',
-      format: 'a4'
+      format: 'a4',
     });
 
     const pageWidth = pdf.internal.pageSize.getWidth();
@@ -383,7 +386,7 @@ export class TemplateService {
 
     for (let i = 0; i < products.length; i++) {
       const product = products[i];
-      
+
       // Clone the template deeply to modify safely
       const clonedTemplate: Template = JSON.parse(JSON.stringify(template));
 
@@ -406,13 +409,16 @@ export class TemplateService {
         if (widget.type === 'image') {
           // Enhanced multi-image mapping logic
           let imageData = '';
-          
+
           // Get all available image columns for this product
-          const imageColumns = Object.keys(product).filter(key => 
-            key.toLowerCase().includes('image') && product[key] && 
-            typeof product[key] === 'string' && product[key].startsWith('data:image/')
+          const imageColumns = Object.keys(product).filter(
+            (key) =>
+              key.toLowerCase().includes('image') &&
+              product[key] &&
+              typeof product[key] === 'string' &&
+              product[key].startsWith('data:image/')
           );
-          
+
           if (imageColumns.length > 0) {
             // Method 1: Try to map by widget ID or position
             const targetColumn = `image${widget.id}`;
@@ -426,7 +432,7 @@ export class TemplateService {
             // Method 3: Use available images in sequence
             else {
               // Find the first unused image column
-              const availableColumn = imageColumns.find(col => product[col]);
+              const availableColumn = imageColumns.find((col) => product[col]);
               if (availableColumn) {
                 imageData = product[availableColumn];
                 // Mark as used by clearing it (prevents reuse)
@@ -434,7 +440,7 @@ export class TemplateService {
               }
             }
           }
-          
+
           // Handle URL conversion if needed
           if (imageData && typeof imageData === 'string') {
             if (imageData.startsWith('http')) {
@@ -481,7 +487,7 @@ if (widget.type === 'qr-code') {
       // Create a temporary canvas container for this specific product
       const canvas = await this.createTemporaryCanvas(clonedTemplate.widgets);
       const imgData = canvas.toDataURL('image/png');
-      
+
       const imgWidth = pageWidth;
       const imgHeight = (canvas.height * pageWidth) / canvas.width;
 
@@ -509,7 +515,8 @@ if (widget.type === 'qr-code') {
     }
 
     // Save/download the pdf file
-    const exportFileDefaultName = templateName.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '_products.pdf';
+    const exportFileDefaultName =
+      templateName.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '_products.pdf';
     pdf.save(exportFileDefaultName);
   }
 
@@ -518,7 +525,7 @@ if (widget.type === 'qr-code') {
     try {
       const response = await fetch(url);
       const blob = await response.blob();
-      
+
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = () => resolve(reader.result as string);
@@ -623,7 +630,7 @@ if (widget.type === 'qr-code') {
         container.style.display = 'flex';
         container.style.alignItems = 'center';
         container.style.gap = '10px';
-        
+
         // Apply positioning class logic
         const labelPosition = widget.labelPosition || 'left';
         switch (labelPosition) {
@@ -653,7 +660,7 @@ if (widget.type === 'qr-code') {
           label.style.display = 'inline-block';
           container.appendChild(label);
         }
-        
+
         // Create input field
         const input = document.createElement('div');
         input.textContent = widget.inputValue || '';
@@ -666,48 +673,47 @@ if (widget.type === 'qr-code') {
         input.style.minHeight = '60px';
         input.style.wordWrap = 'break-word';
         container.appendChild(input);
-        
+
         element.appendChild(container);
         break;
 
-case 'description-input':
+  case 'description-input':
   // Create container with proper positioning
   const descContainer = document.createElement('div');
   descContainer.style.display = 'flex';
   descContainer.style.alignItems = 'center';
   descContainer.style.gap = '10px';
 
-  // Apply positioning class logic
-  const descLabelPosition = widget.descriptionLabelPosition || 'left';
-  switch (descLabelPosition) {
-    case 'top':
-      descContainer.style.flexDirection = 'column';
-      descContainer.style.alignItems = 'flex-start';
-      break;
-    case 'bottom':
-      descContainer.style.flexDirection = 'column-reverse';
-      descContainer.style.alignItems = 'flex-start';
-      break;
-    case 'left':
-      descContainer.style.flexDirection = 'row';
-      break;
-    case 'right':
-      descContainer.style.flexDirection = 'row-reverse';
-      break;
-  }
+        // Apply positioning class logic
+        const descLabelPosition = widget.descriptionLabelPosition || 'left';
+        switch (descLabelPosition) {
+          case 'top':
+            descContainer.style.flexDirection = 'column';
+            descContainer.style.alignItems = 'flex-start';
+            break;
+          case 'bottom':
+            descContainer.style.flexDirection = 'column-reverse';
+            descContainer.style.alignItems = 'flex-start';
+            break;
+          case 'left':
+            descContainer.style.flexDirection = 'row';
+            break;
+          case 'right':
+            descContainer.style.flexDirection = 'row-reverse';
+            break;
+        }
 
-  // Create label if not hidden
-  if (!widget.descriptionHideLabel && widget.descriptionLabelText) {
-    const descLabel = document.createElement('div');
-    descLabel.textContent = widget.descriptionLabelText;
-    descLabel.style.fontWeight = 'bold';
-    descLabel.style.color = '#2d3748';
-    descLabel.style.padding = '5px';
-    descLabel.style.display = 'inline-block';
-    descContainer.appendChild(descLabel);
-  }
+        // Create label if not hidden
+        if (!widget.descriptionHideLabel && widget.descriptionLabelText) {
+          const descLabel = document.createElement('div');
+          descLabel.textContent = widget.descriptionLabelText;
+          descLabel.style.fontWeight = 'bold';
+          descLabel.style.color = '#2d3748';
+          descLabel.style.padding = '5px';
+          descLabel.style.display = 'inline-block';
+          descContainer.appendChild(descLabel);
+        }
 
-  // ✅ Create input field (not textarea)
   const descInput = document.createElement('input');
   descInput.type = 'text';
   descInput.value = widget.descriptionInputValue || '';
@@ -721,9 +727,8 @@ case 'description-input':
 
   descContainer.appendChild(descInput);
 
-  element.appendChild(descContainer);
-  break;
-
+        element.appendChild(descContainer);
+        break;
 
 
       case 'separator':
@@ -745,7 +750,7 @@ case 'description-input':
         element.style.alignItems = 'center';
         element.style.justifyContent = 'center';
         element.style.color = '#718096';
-        
+
         if (widget.imageData) {
           // Remove border when image is present
           element.style.border = 'none';
@@ -763,20 +768,20 @@ case 'description-input':
         break;
 
       case 'qr-code':
-  element.style.background = '#f7fafc';
-  element.style.padding = '10px';
-  element.style.borderRadius = '4px';
-  element.style.textAlign = 'center';
-  element.style.minHeight = '80px';
-  element.style.display = 'flex';
-  element.style.alignItems = 'center';
-  element.style.justifyContent = 'center';
-  element.style.color = '#718096';
-  element.style.flexDirection = 'column';
+        element.style.background = '#f7fafc';
+        element.style.padding = '10px';
+        element.style.borderRadius = '4px';
+        element.style.textAlign = 'center';
+        element.style.minHeight = '80px';
+        element.style.display = 'flex';
+        element.style.alignItems = 'center';
+        element.style.justifyContent = 'center';
+        element.style.color = '#718096';
+        element.style.flexDirection = 'column';
 
-  if (widget.hasQr) {
-    // Remove border when QR code is present
-    element.style.border = 'none';
+        if (widget.hasQr) {
+          // Remove border when QR code is present
+          element.style.border = 'none';
 
     // Generate actual QR code using canvas
     const qrcodeCanvas = this.generateQRCodeCanvas(widget.qrData); // synchronous
@@ -808,13 +813,12 @@ case 'description-input':
         element.style.justifyContent = 'center';
         element.style.color = '#718096';
         element.style.flexDirection = 'column';
-        
+
         if (widget.hasBarcode) {
           widget.barcodeType = widget.barcodeType ?? 'CODE128';
           widget.productId = this.generateProductIdByFormat(widget.barcodeType);
-          // Remove border when barcode is present
           element.style.border = 'none';
-          
+
           // Generate actual barcode using canvas
           const barcodeCanvas = this.generateBarcodeCanvas(widget.productId, widget.barcodeType);
           if (barcodeCanvas) {
@@ -823,27 +827,28 @@ case 'description-input':
             barcodeImg.style.maxWidth = '100%';
             barcodeImg.style.height = 'auto';
             element.appendChild(barcodeImg);
-                      } else {
+          } else {
             // Fallback to CSS barcode if canvas generation fails
             const barcodeContainer = document.createElement('div');
             barcodeContainer.style.display = 'flex';
             barcodeContainer.style.flexDirection = 'column';
             barcodeContainer.style.alignItems = 'center';
-            
+
             const barcode = document.createElement('div');
-            barcode.style.background = 'repeating-linear-gradient(90deg, #000 0px, #000 2px, #fff 2px, #fff 4px)';
+            barcode.style.background =
+              'repeating-linear-gradient(90deg, #000 0px, #000 2px, #fff 2px, #fff 4px)';
             barcode.style.height = '50px';
             barcode.style.width = '150px';
             barcode.style.marginBottom = '5px';
             barcodeContainer.appendChild(barcode);
-            
+
             const productIdText = document.createElement('div');
             productIdText.textContent = widget.productId;
             productIdText.style.textAlign = 'center';
             productIdText.style.fontSize = '12px';
             productIdText.style.color = '#000';
             barcodeContainer.appendChild(productIdText);
-            
+
             element.appendChild(barcodeContainer);
           }
         } else {
@@ -859,6 +864,7 @@ case 'description-input':
 
     return element;
   }
+
   private generateBarcodeCanvas(productId: string, barcodeType: BarcodeType): HTMLCanvasElement {
     const canvas = document.createElement('canvas');
 

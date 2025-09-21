@@ -1,62 +1,72 @@
-
 <div class="widgets-panel">
   <h3>Widgets</h3>
   <div class="widgets-grid">
-    <div class="widget-item" draggable="true" (dragstart)="onDragStart('description-input', $event)">
+    <div
+      class="widget-item"
+      draggable="true"
+      (dragstart)="onDragStart('description-input', $event)"
+    >
       Text Input
-    </div>    
+    </div>
     <div class="widget-item" draggable="true" (dragstart)="onDragStart('barcode', $event)">
       Barcode
     </div>
-     <div class="widget-item" draggable="true" (dragstart)="onDragStart('qr-code', $event)">
+    <div class="widget-item" draggable="true" (dragstart)="onDragStart('qr-code', $event)">
       QR Code
     </div>
     <div class="widget-item" draggable="true" (dragstart)="onDragStart('separator', $event)">
       Separator Line
     </div>
-    <div class="widget-item" draggable="true" (dragstart)="onDragStart('image', $event)">
-      Image
-    </div>
+    <div class="widget-item" draggable="true" (dragstart)="onDragStart('image', $event)">Image</div>
     <div class="widget-item" draggable="true" (dragstart)="onDragStart('labeled-input', $event)">
-      Multiline <br> Text
+      Multiline <br />
+      Text
     </div>
-
   </div>
   <div class="saved-templates">
-  <h3 class="templates-title">Saved Templates</h3>
-   <div *ngIf="templates?.length == 0" class="no-templates-saved">
+    <h3 class="templates-title">Saved Templates</h3>
+    <div *ngIf="templates?.length == 0" class="no-templates-saved">
       <p>No templates saved!</p>
     </div>
-  <div class="templates-list" *ngIf="templates?.length">
-
-    <div class="templates-scroll" >
+    <div class="templates-list" *ngIf="templates?.length">
+      <div class="templates-scroll">
         <div
-      *ngFor="let template of templates"
-      class="template-item"
-      (click)="loadTemplate.emit(template)"
-    >
-    <div class="template">
-      <span>{{template.templateDetails.name}}</span>
-<!-- template -->
-<button
-  class="icon-btn"
-  (click)="onDeleteTemplate(template, $event)"
-  aria-label="Delete template"
-  title="Delete template"
->
-  <!-- simple trash/bin SVG -->
-  <svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
-    <path fill="currentColor" d="M9 3h6l1 2h4v2H4V5h4l1-2zm1 6v8h2V9H10zm4 0v8h2V9h-2zM6 9v10a2 2 0 002 2h8a2 2 0 002-2V9H6z"/>
-  </svg>
-</button>
-</div>
+          *ngFor="let template of templates"
+          class="template-item"
+          (click)="loadTemplate.emit(template)"
+        >
+          <div class="template">
+            <span>{{ template.templateDetails.name }}</span>
+            <button
+              class="icon-btn"
+              (click)="onDeleteTemplate(template, $event)"
+              aria-label="Delete template"
+              title="Delete template"
+            >
+              <!-- simple trash/bin SVG -->
+              <svg
+                viewBox="0 0 24 24"
+                width="18"
+                height="18"
+                xmlns="http://www.w3.org/2000/svg"
+                role="img"
+                aria-hidden="true"
+              >
+                <path
+                  fill="currentColor"
+                  d="M9 3h6l1 2h4v2H4V5h4l1-2zm1 6v8h2V9H10zm4 0v8h2V9h-2zM6 9v10a2 2 0 002 2h8a2 2 0 002-2V9H6z"
+                />
+              </svg>
+            </button>
+          </div>
 
-
-    <span class="template-usage-msg" *ngIf="deletionFailed !== '' && template.referenceId === deletionFailed">Oops! Template in use.</span>
+          <span
+            class="template-usage-msg"
+            *ngIf="deletionFailed !== '' && template.referenceId === deletionFailed"
+            >Oops! Template in use.</span
+          >
+        </div>
+      </div>
     </div>
-
-  </div>
-
-  </div>
   </div>
 </div>

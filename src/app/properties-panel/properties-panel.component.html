@@ -1,11 +1,11 @@
 <div class="properties-panel">
   <!-- <div style="display: flex; gap:8px"> -->
-<!-- <span class="properties-icon"> -->
+  <!-- <span class="properties-icon"> -->
   <!-- </span>  -->
   <span>Properties</span>
-  
+
   <!-- </div> -->
-  
+
   <div *ngIf="!selectedWidget" class="no-selection">
     <p>Select a widget to edit its properties</p>
   </div>
@@ -27,79 +27,76 @@
         <option value="ITF14">ITF14</option>
       </select>
     </div>
-    
+
     <button class="btn btn-primary full-width" (click)="generateBarcode.emit()">
       Generate Barcode
     </button>
-    
+
     <!-- <div class="property-group json-data">
       <label>Generated JSON Preview</label>
       <div class="json-preview">{{jsonPreview}}</div>
     </div> -->
-    
+
     <button
       *ngIf="selectedWidget.hasBarcode"
       class="btn btn-primary full-width"
       (click)="clearBarcode.emit()"
     >
-       Clear Barcode
+      Clear Barcode
     </button>
   </div>
 
-    <!-- Barcode Properties -->
+  <!-- Barcode Properties -->
   <div *ngIf="selectedWidget && selectedWidget.type === 'qr-code'" class="widget-properties">
     <h4>Widget: QR Code</h4>
-    
-    
-    <button class="btn btn-primary full-width" (click)="generateQr.emit(jsonPreview)">
-       Generate QR Code
-    </button>
-    
 
-    
+    <button class="btn btn-primary full-width" (click)="generateQr.emit(jsonPreview)">
+      Generate QR Code
+    </button>
+
     <button
       *ngIf="selectedWidget.hasQr"
       class="btn btn-primary full-width"
       (click)="clearQr.emit()"
     >
-       Clear QR
+      Clear QR
     </button>
   </div>
 
   <!-- Image Properties -->
   <div *ngIf="selectedWidget && selectedWidget.type === 'image'" class="widget-properties">
     <h4>Widget: Image</h4>
-    
+
     <div class="property-group">
       <label>Image File</label>
       <div class="image-info">
-        {{selectedWidget.imageName || 'No image uploaded'}}
+        {{ selectedWidget.imageName || 'No image uploaded' }}
       </div>
-      <button class="btn btn-primary full-width" (click)="onImageUpload()">
-         Upload New Image
-      </button>
+      <button class="btn btn-primary full-width" (click)="onImageUpload()">Upload New Image</button>
     </div>
   </div>
 
-    <!-- Separator Properties -->
+  <!-- Separator Properties -->
   <div *ngIf="selectedWidget && selectedWidget.type === 'separator'" class="widget-properties">
     <h4>Widget: Separator Line</h4>
-    
-<div class="property-group">
-  <label for="line-orientation">Line Orientation:</label>
-<select id="line-orientation"
+
+    <div class="property-group">
+      <label for="line-orientation">Line Orientation:</label>
+      <select
+        id="line-orientation"
         [value]="selectedWidget.orientation"
-        (change)="onOrientationChange($event)">
-  <option value="horizontal">Horizontal</option>
-  <option value="vertical">Vertical</option>
-</select>
-</div>
+        (change)="onOrientationChange($event)"
+      >
+        <option value="horizontal">Horizontal</option>
+        <option value="vertical">Vertical</option>
+      </select>
+    </div>
   </div>
 
   <!-- Labeled Input Properties -->
   <div *ngIf="selectedWidget && selectedWidget.type === 'labeled-input'" class="widget-properties">
     <h4>Widget: Labeled Input</h4>
-    
+
     <div class="property-group">
       <label>Label Text</label>
       <input
@@ -108,7 +105,7 @@
         (input)="onPropertyChange('labelText', $any($event.target).value)"
       />
     </div>
-    
+
     <div class="property-group">
       <label>Input Value</label>
       <input
@@ -117,7 +114,7 @@
         (input)="onPropertyChange('inputValue', $any($event.target).value)"
       />
     </div>
-    
+
     <div class="property-group">
       <label>Hide Label</label>
       <select
@@ -128,7 +125,7 @@
         <option value="true">Yes</option>
       </select>
     </div>
-    
+
     <div class="property-group">
       <label>Label Position (relative to input field)</label>
       <select
@@ -142,10 +139,13 @@
       </select>
     </div>
   </div>
-    <!-- Labeled Input Properties -->
-  <div *ngIf="selectedWidget && selectedWidget.type === 'description-input'" class="widget-properties">
+  <!-- Labeled Input Properties -->
+  <div
+    *ngIf="selectedWidget && selectedWidget.type === 'description-input'"
+    class="widget-properties"
+  >
     <h4>Widget: Description Input</h4>
-    
+
     <div class="property-group">
       <label>Label Text</label>
       <input
@@ -154,7 +154,7 @@
         (input)="onPropertyChange('descriptionLabelText', $any($event.target).value)"
       />
     </div>
-    
+
     <div class="property-group">
       <label>Input Value</label>
       <input
@@ -163,7 +163,7 @@
         (input)="onPropertyChange('descriptionInputValue', $any($event.target).value)"
       />
     </div>
-    
+
     <div class="property-group">
       <label>Hide Label</label>
       <select
@@ -174,7 +174,7 @@
         <option value="true">Yes</option>
       </select>
     </div>
-    
+
     <div class="property-group">
       <label>Label Position (relative to input field)</label>
       <select
@@ -190,19 +190,14 @@
   </div>
 </div>
 
-    <div class="property-group json-data">
-      <label>Product Details</label>
-      <div class="json-preview">{{jsonPreview}}</div>
-          <button class="btn btn-primary full-width" (click)="saveProductDetails()">
-      Save Product Details
-    </button>
-    <!-- success message -->
-     
-    
-<div *ngIf="showSuccess" class="success-message">
-   ✓ Success! Product details saved.
-</div>
-<div *ngIf="isTemplateNull" class="info-message">
-  Please save your template first!
-</div>
+<div class="property-group json-data">
+  <label>Product Details</label>
+  <div class="json-preview">{{ jsonPreview }}</div>
+  <button class="btn btn-primary full-width" (click)="saveProductDetails()">
+    Save Product Details
+  </button>
+  <!-- success message -->
+
+  <div *ngIf="showSuccess" class="success-message">✓ Success! Product details saved.</div>
+  <div *ngIf="isTemplateNull" class="info-message">Please save your template first!</div>
 </div>

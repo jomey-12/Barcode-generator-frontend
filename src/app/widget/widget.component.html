@@ -4,31 +4,28 @@
   [class.selected]="isSelected"
   [style.left.px]="widget.left"
   [style.top.px]="widget.top"
-[style.width.px]="widgetWidth"
-[style.height.px]="widgetHeight"
-[style.height]="widgetHeightAuto"
-   [style.transform]="widget.orientation === 'vertical' ? 'rotate(90deg)' : 'rotate(0deg)'"
+  [style.width.px]="widgetWidth"
+  [style.height.px]="widgetHeight"
+  [style.height]="widgetHeightAuto"
+  [style.transform]="widget.orientation === 'vertical' ? 'rotate(90deg)' : 'rotate(0deg)'"
   (mousedown)="onMouseDown($event)"
   (click)="onSelect($event)"
 >
-  <!-- Delete Button -->
   <div class="delete-widget" (click)="onDelete($event)">×</div>
 
-  <!-- Separator Widget -->
-<div *ngIf="widget.type === 'separator'"
-     class="widget-separator"
-     id="widget-separator"
-     [ngClass]="widget.orientation">
-</div>
+  <div
+    *ngIf="widget.type === 'separator'"
+    class="widget-separator"
+    id="widget-separator"
+    [ngClass]="widget.orientation"
+  ></div>
 
-
-  <!-- Barcode Widget -->
   <div *ngIf="widget.type === 'barcode'" class="widget-barcode">
     <div *ngIf="!widget.hasBarcode || !widget.productId">
-      📊 Barcode Placeholder<br><small>Configure properties to generate</small>
+      📊 Barcode Placeholder<br /><small>Configure properties to generate</small>
     </div>
     <svg
-    class="barcode-svg"
+      class="barcode-svg"
       *ngIf="widget.hasBarcode && widget.productId"
       [id]="'barcode-' + widget.id"
       appBarcode
@@ -38,30 +35,19 @@
     ></svg>
   </div>
 
-<!-- QR Code Widget -->
-<div *ngIf="widget.type === 'qr-code'" class="widget-qrcode">
-  <div *ngIf="!widget.hasQr" >
-     QR Code Placeholder<br>
+  <div *ngIf="widget.type === 'qr-code'" class="widget-qrcode">
+    <div *ngIf="!widget.hasQr">QR Code Placeholder<br /></div>
+    <div *ngIf="widget.hasQr">
+      <qrcode appQrCode [qrdata]="widget.qrData || ''" [width]="100" [errorCorrectionLevel]="'M'">
+      </qrcode>
+    </div>
   </div>
-  <div *ngIf="widget.hasQr">
-    <qrcode
-      appQrCode
-      [qrdata]="widget.qrData || ''"
-      [width]="100"
-      [errorCorrectionLevel]="'M'">
-    </qrcode>
-  </div>
-</div>
 
-
-  <!-- Image Widget -->
   <div *ngIf="widget.type === 'image'" class="widget-image">
     <div *ngIf="!widget.imageData">
-       Image Placeholder<br>
+      Image Placeholder<br />
       <small>Click to upload image</small>
-      <button class="image-upload-btn" (click)="onImageUpload($event)">
-        Upload Image
-      </button>
+      <button class="image-upload-btn" (click)="onImageUpload($event)">Upload Image</button>
     </div>
     <img
       class="image-upload"
@@ -70,35 +56,29 @@
       [alt]="widget.imageName"
       (click)="onImageUpload($event)"
       style="cursor: pointer"
-    >
+    />
   </div>
 
-  <!-- Labeled Input Widget -->
   <div
     *ngIf="widget.type === 'labeled-input'"
     class="labeled-input-container"
     id="labeled-input-container"
     [class]="'position-' + widget.labelPosition"
   >
-    <div
-      class="widget-label"
-      [class.hidden]="widget.hideLabel"
-    >
-      {{widget.labelText}}
+    <div class="widget-label" [class.hidden]="widget.hideLabel">
+      {{ widget.labelText }}
     </div>
-   
- <textarea
- id="textarea"
-  type="text"
-  class="widget-input"
-  [value]="widget.inputValue"
-  (input)="onInputChange($event)"
-  (click)="$event.stopPropagation()"
-></textarea>
+
+    <textarea
+      id="textarea"
+      type="text"
+      class="widget-input"
+      [value]="widget.inputValue"
+      (input)="onInputChange($event)"
+      (click)="$event.stopPropagation()"
+    ></textarea>
   </div>
 
-
-    <!--Description Labeled Input Widget -->
   <div
     *ngIf="widget.type === 'description-input'"
     class="description-input-container"
@@ -111,32 +91,39 @@
     >
       {{widget.descriptionLabelText}}
     </div>
-   
-<input
-  id="textarea"
-  type="text"
-  class="widget-input"
-  [value]="widget.descriptionInputValue"
-  (input)="onInputChange($event)"
-  (click)="$event.stopPropagation()"
-/>
 
+    <input
+      id="textarea"
+      type="text"
+      class="widget-input"
+      [value]="widget.descriptionInputValue"
+      (input)="onInputChange($event)"
+      (click)="$event.stopPropagation()"
+    />
   </div>
 
-
-
   <!-- Resize Handle -->
-<!-- Resize Handles -->
-<div class="resize-handle resize-handle-top" (mousedown)="onResizeStart($event, 'top')"></div>
-<div class="resize-handle resize-handle-right" (mousedown)="onResizeStart($event, 'right')"></div>
-<div class="resize-handle resize-handle-bottom" (mousedown)="onResizeStart($event, 'bottom')"></div>
-<div class="resize-handle resize-handle-left" (mousedown)="onResizeStart($event, 'left')"></div>
+  <!-- Resize Handles -->
+  <div class="resize-handle resize-handle-top" (mousedown)="onResizeStart($event, 'top')"></div>
+  <div class="resize-handle resize-handle-right" (mousedown)="onResizeStart($event, 'right')"></div>
+  <div
+    class="resize-handle resize-handle-bottom"
+    (mousedown)="onResizeStart($event, 'bottom')"
+  ></div>
+  <div class="resize-handle resize-handle-left" (mousedown)="onResizeStart($event, 'left')"></div>
 
-<!-- Corners -->
-<div class="resize-handle resize-handle-top-left" (mousedown)="onResizeStart($event, 'top-left')"></div>
+  <!-- Corners -->
+  <div
+    class="resize-handle resize-handle-top-left"
+    (mousedown)="onResizeStart($event, 'top-left')"
+  ></div>
 
-<div class="resize-handle resize-handle-bottom-left" (mousedown)="onResizeStart($event, 'bottom-left')"></div>
-<div class="resize-handle resize-handle-bottom-right" (mousedown)="onResizeStart($event, 'bottom-right')"></div>
-
-
+  <div
+    class="resize-handle resize-handle-bottom-left"
+    (mousedown)="onResizeStart($event, 'bottom-left')"
+  ></div>
+  <div
+    class="resize-handle resize-handle-bottom-right"
+    (mousedown)="onResizeStart($event, 'bottom-right')"
+  ></div>
 </div>

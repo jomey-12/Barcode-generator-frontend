@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Output } from '@angular/core';
-import { Widget, WidgetType } from '../models/widget.model'; // make sure the path is correct
+import { Widget, WidgetType } from '../models/widget.model';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -10,7 +10,6 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./sidebar.component.scss'],
   standalone: true,
   imports: [CommonModule, FormsModule, DragDropModule]
- // only needed for standalone components
 })
 export class SidebarComponent {
   @Output() widgetAdded = new EventEmitter<Widget>();
