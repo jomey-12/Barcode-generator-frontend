@@ -1,6 +1,8 @@
-export type WidgetType = 'labeled-input' | 'barcode' | 'image' | 'separator';
+export type WidgetType = 'labeled-input' | 'barcode' | 'image' | 'separator' | 'qr-code' | 'description-input';
 
 export type LabelPosition = 'left' | 'right' | 'top' | 'bottom';
+
+export type BarcodeType = 'CODE128' | 'CODE39' | 'EAN13' | 'UPC' | 'ITF14';
 
 export interface Widget {
   id: number;
@@ -20,6 +22,7 @@ export interface Widget {
   labelPosition?: LabelPosition;
   
   // Barcode properties
+  barcodeType?: BarcodeType;
   productId?: string;
   hasBarcode?: boolean;
   
@@ -31,7 +34,15 @@ export interface Widget {
   fontSize?: string;
   fontWeight?: string;
   //separator properties
-  orientation?: string
+  orientation?: string;
+
+  hasQr?: boolean;
+  qrData?: string;
+
+  descriptionLabelText?: string;
+  descriptionInputValue?: string;
+  descriptionHideLabel?: boolean;
+  descriptionLabelPosition?: LabelPosition;
 }
 
 export interface Template {

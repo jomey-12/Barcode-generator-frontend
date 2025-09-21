@@ -96,6 +96,25 @@
     }
   }
 
+    .widget-qrcode {
+    background: #f7fafc;
+   // padding: 10px;
+    border-radius: 4px;
+    text-align: center;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #718096;
+    border: 2px dashed #cbd5e0;
+    flex-direction: column;
+
+    svg {
+      max-width: 100%;
+      height: auto;
+    }
+  }
+
   .widget-image {
     //padding: 20px;
     border-radius: 4px;
@@ -184,6 +203,32 @@
     cursor: nwse-resize;
     border-radius: 2px;
   }
+
+  /* Edges */
+  .resize-handle-top {
+    cursor: n-resize;   /* ↑ */
+  }
+  .resize-handle-right {
+    cursor: e-resize;   /* → */
+  }
+  .resize-handle-bottom {
+    cursor: s-resize;   /* ↓ */
+  }
+  .resize-handle-left {
+    cursor: w-resize;   /* ← */
+  }
+
+  /* Corners */
+  .resize-handle-top-left {
+    cursor: nwse-resize; /* ↖↘ */
+  }
+  .resize-handle-bottom-left {
+    cursor: nesw-resize; /* ↙↗ */
+  }
+  .resize-handle-bottom-right {
+    cursor: nwse-resize; /* ↘↖ */
+  }
+
 }
 
 
@@ -245,8 +290,9 @@
 //   margin-top: 8px; /* or whatever value you need */
 // }
 textarea{
-line-height: 5px;
-height: 5px;
+// line-height: 5px;
+// height: 5px;
+min-height: 60px;
 vertical-align: middle;
 }
 .position-left .position-right{
@@ -277,4 +323,8 @@ textarea{
 .dropped-widget,
 #canvas-container {
   overflow: visible;
+}
+
+.widget-qrcode:has(qrcode) {
+  border: none !important;
 }

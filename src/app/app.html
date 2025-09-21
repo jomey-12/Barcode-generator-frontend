@@ -63,8 +63,11 @@
       (widgetUpdate)="updateWidget($event)"
       (generateBarcode)="generateBarcode()"
       (clearBarcode)="clearBarcode()"
+      (generateQr)="generateQr(jsonPreview)"
+      (clearQr)="clearQr()"
       (imageUpload)="handleImageUpload($event)"
-      (separatorOrientation)="handleSeparatorOrientation($event)">
+      (separatorOrientation)="handleSeparatorOrientation($event)"
+      (barcodeType)="getBarcodeType($event)">
     </app-properties-panel>
   </div>
 </div>

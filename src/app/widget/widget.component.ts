@@ -6,15 +6,16 @@ import { CommonModule } from '@angular/common';
 import { BarcodeDirective } from '../directives/barcode.directive';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { FormsModule } from '@angular/forms';
+import { QRCodeComponent } from 'angularx-qrcode';
 
 @Component({
   selector: 'app-widget',
   templateUrl: './widget.component.html',
   standalone: true,
-  imports: [CommonModule, BarcodeDirective, DragDropModule, FormsModule],
+  imports: [CommonModule, BarcodeDirective, DragDropModule, FormsModule, QRCodeComponent],
   styleUrls: ['./widget.component.scss']
 })
-export class WidgetComponent implements AfterViewInit {
+export class WidgetComponent {
   @Input() widget!: Widget;
   @Input() isSelected!: boolean;
 
@@ -35,12 +36,16 @@ export class WidgetComponent implements AfterViewInit {
 
   constructor(private elementRef: ElementRef) {}
 
-  ngAfterViewInit() {
-    // Generate barcode if needed
-    if (this.widget.type === 'barcode' && this.widget.hasBarcode && this.widget.productId) {
-      this.generateBarcodeForWidget();
-    }
-  }
+  get widgetWidth() {
+  return this.widget.width;
+}
+get widgetHeight() {
+  return this.widget.height === 'auto' ? null : this.widget.height;
+}
+get widgetHeightAuto() {
+  return this.widget.height === 'auto' ? 'auto' : null;
+}
+
 
   onSelect(event: Event) {
     event.stopPropagation();
@@ -240,23 +245,5 @@ private resizeHandler(event: MouseEvent) {
   onInputChange(event: Event) {
     const target = event.target as HTMLInputElement;
     this.widget.inputValue = target.value;
-  }
-
-  private generateBarcodeForWidget() {
-    setTimeout(() => {
-      const svgElement = this.elementRef.nativeElement.querySelector(`#barcode-${this.widget.id}`);
-      if (svgElement && (window as any).JsBarcode) {
-        try {
-          (window as any).JsBarcode(svgElement, this.widget.productId, {
-            format: 'CODE128',
-            width: 2,
-            height: 50,
-            displayValue: true
-          });
-        } catch (e) {
-          console.error('Barcode generation error:', e);
-        }
-      }
-    }, 100);
   }
 }

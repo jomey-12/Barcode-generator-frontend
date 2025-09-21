@@ -8,19 +8,23 @@
   <!-- Barcode Properties -->
   <div *ngIf="selectedWidget && selectedWidget.type === 'barcode'" class="widget-properties">
     <h4>Widget: Barcode</h4>
-    
+
     <div class="property-group">
-      <label>Product ID (for barcode)</label>
-      <input
-        type="text"
-        [value]="selectedWidget.productId"
-        (input)="onPropertyChange('productId', $any($event.target).value)"
-        placeholder="Enter product ID"
-      />
+      <label>Barcode Type</label>
+      <select
+        [value]="selectedWidget.barcodeType"
+        (change)="onPropertyChange('barcodeType', $any($event.target).value)"
+      >
+        <option value="CODE128">CODE128</option>
+        <option value="CODE39">CODE39</option>
+        <option value="EAN13">EAN13</option>
+        <option value="UPC">UPC</option>
+        <option value="ITF14">ITF14</option>
+      </select>
     </div>
     
     <button class="btn btn-primary full-width" (click)="generateBarcode.emit()">
-       Generate Barcode
+      Generate Barcode
     </button>
     
     <!-- <div class="property-group json-data">
@@ -37,6 +41,26 @@
     </button>
   </div>
 
+    <!-- Barcode Properties -->
+  <div *ngIf="selectedWidget && selectedWidget.type === 'qr-code'" class="widget-properties">
+    <h4>Widget: QR Code</h4>
+    
+    
+    <button class="btn btn-primary full-width" (click)="generateQr.emit(jsonPreview)">
+       Generate QR Code
+    </button>
+    
+
+    
+    <button
+      *ngIf="selectedWidget.hasQr"
+      class="btn btn-secondary full-width"
+      (click)="clearQr.emit()"
+    >
+       Clear QR
+    </button>
+  </div>
+
   <!-- Image Properties -->
   <div *ngIf="selectedWidget && selectedWidget.type === 'image'" class="widget-properties">
     <h4>Widget: Image</h4>
@@ -47,7 +71,7 @@
         {{selectedWidget.imageName || 'No image uploaded'}}
       </div>
       <button class="btn btn-primary full-width" (click)="onImageUpload()">
-        📁 Upload New Image
+         Upload New Image
       </button>
     </div>
   </div>
@@ -106,10 +130,56 @@
         [value]="selectedWidget.labelPosition"
         (change)="onPropertyChange('labelPosition', $any($event.target).value)"
       >
-        <option value="right">Right of Label</option>
-        <option value="left">Left of Label</option>
-        <option value="top">Above Label</option>
-        <option value="bottom">Below Label</option>
+        <option value="right">Right of Input</option>
+        <option value="left">Left of Input</option>
+        <option value="top">Above Input</option>
+        <option value="bottom">Below Input</option>
+      </select>
+    </div>
+  </div>
+    <!-- Labeled Input Properties -->
+  <div *ngIf="selectedWidget && selectedWidget.type === 'description-input'" class="widget-properties">
+    <h4>Widget: Description Input</h4>
+    
+    <div class="property-group">
+      <label>Label Text</label>
+      <input
+        type="text"
+        [value]="selectedWidget.descriptionLabelText"
+        (input)="onPropertyChange('descriptionLabelText', $any($event.target).value)"
+      />
+    </div>
+    
+    <div class="property-group">
+      <label>Input Value</label>
+      <input
+        type="text"
+        [value]="selectedWidget.descriptionInputValue"
+        (input)="onPropertyChange('descriptionInputValue', $any($event.target).value)"
+      />
+    </div>
+    
+    <div class="property-group">
+      <label>Hide Label</label>
+      <select
+        [value]="selectedWidget.descriptionHideLabel"
+        (change)="onPropertyChange('descriptionHideLabel', $any($event.target).value === 'true')"
+      >
+        <option value="false">No</option>
+        <option value="true">Yes</option>
+      </select>
+    </div>
+    
+    <div class="property-group">
+      <label>Label Position (relative to input field)</label>
+      <select
+        [value]="selectedWidget.descriptionLabelPosition"
+        (change)="onPropertyChange('descriptionLabelPosition', $any($event.target).value)"
+      >
+        <option value="right">Right of Input</option>
+        <option value="left">Left of Input</option>
+        <option value="top">Above Input</option>
+        <option value="bottom">Below Input</option>
       </select>
     </div>
   </div>

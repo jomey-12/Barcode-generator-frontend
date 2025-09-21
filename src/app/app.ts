@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { Widget, Template, WidgetType, TemplateResponse, TemplateWrapper } from './models/template.model';
+import { Widget, Template, WidgetType, TemplateResponse, TemplateWrapper, BarcodeType } from './models/template.model';
 import { TemplateService } from './service/template.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -51,6 +51,7 @@ export class AppComponent implements OnInit {
   deletionFailedTimeout: any;
   showConfirmationDialog: boolean = false;
   templateToBeDeleted!: TemplateWrapper;
+  selectedBarcodeType: BarcodeType = 'CODE128';
 
   constructor(private templateService: TemplateService, private dataService: DataService, private cdr: ChangeDetectorRef) {}
 
@@ -88,6 +89,10 @@ export class AppComponent implements OnInit {
     this.updateJsonPreview();
   }
 
+  getBarcodeType(barcodeType: BarcodeType) {
+    this.selectedBarcodeType = barcodeType;
+  }
+
   createWidget(
     type: WidgetType,
     position: { x: number; y: number },
@@ -108,6 +113,7 @@ export class AppComponent implements OnInit {
       hideLabel: savedData?.hideLabel || false,
       labelPosition: savedData?.labelPosition || 'left',
       // Barcode properties
+      barcodeType: savedData?.barcodeType || 'CODE128',
       productId: savedData?.productId || '',
       hasBarcode: savedData?.hasBarcode || false,
       // Image properties
@@ -118,6 +124,13 @@ export class AppComponent implements OnInit {
       fontWeight: savedData?.fontWeight || 'normal',
       //separator properties
       orientation: savedData?.orientation || 'horizontal',
+      hasQr: savedData?.hasQr || false,
+      qrData: savedData?.qrData || '',
+
+      descriptionLabelText: savedData?.labelText || 'Label',
+      descriptionInputValue: savedData?.inputValue || '',
+      descriptionHideLabel: savedData?.hideLabel || false,
+      descriptionLabelPosition: savedData?.labelPosition || 'left',
     };
     return widget;
   }
@@ -125,7 +138,9 @@ export class AppComponent implements OnInit {
   private getDefaultWidth(type: WidgetType): number {
     const widthMap = {
       separator: 200,
-      'labeled-input': 250,
+      'labeled-input': 260,
+      'qr-code': 100,
+      'description-input': 260,
       image: 200,
       barcode: 150,
     };
@@ -151,6 +166,7 @@ export class AppComponent implements OnInit {
       this.widgets.splice(index, 1);
       if (this.selectedWidget?.id === widget.id) {
         this.selectedWidget = null;
+        this.updateJsonPreview();
       }
     }
   }
@@ -196,9 +212,9 @@ handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
   })
   }
 
-
   generateBarcode() {
-    if (this.selectedWidget?.type === 'barcode' && this.selectedWidget.productId) {
+    if (this.selectedWidget?.type === 'barcode') {
+      this.selectedWidget.productId = this.templateService.generateProductIdByFormat(this.selectedBarcodeType);
       this.updateWidget({
         widget: this.selectedWidget,
         updates: { hasBarcode: true },
@@ -211,6 +227,23 @@ handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
       this.updateWidget({
         widget: this.selectedWidget,
         updates: { hasBarcode: false, productId: '' },
+      });
+    }
+  }
+    generateQr(qrData: string) {
+    if (this.selectedWidget?.type === 'qr-code') {
+      this.updateWidget({
+        widget: this.selectedWidget,
+        updates: { hasQr: true , qrData: this.jsonPreview},
+      });
+    }
+  }
+
+  clearQr() {
+    if (this.selectedWidget?.type === 'qr-code') {
+      this.updateWidget({
+        widget: this.selectedWidget,
+        updates: { hasQr: false, qrData:'' },
       });
     }
   }
@@ -589,16 +622,20 @@ handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
       return;
     }
 
+    // Enhance data with productId FIRST, before any other processing
+    const enhancedData = this.addProductIdsToData(data);
+    this.importedData = enhancedData;
+
     // Log image statistics
-    const headers = data[0];
+    const headers = enhancedData[0];
     const imageColumns = headers.filter((h: string) => h.toLowerCase().includes('image'));
-    const imageCount = this.getImageCountFromData(data);
+    const imageCount = this.getImageCountFromData(enhancedData);
 
   console.log(`Processing data with ${imageColumns.length} image columns and ${imageCount} images`);
 
-    this.onJsonImported(data);
+    this.onJsonImported(enhancedData);
 
-    const jsonObjects = this.convertToJsonObjects(data);
+    const jsonObjects = this.convertToJsonObjects(enhancedData);
     const productRequests: Product[] = this.convertToProductRequests(jsonObjects);
     this.saveProductDetails(productRequests);
   }
@@ -640,6 +677,37 @@ handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
         console.error('PDF export failed:', error);
       }
     });
+  }
+
+  private addProductIdsToData(data: any[]): any[] {
+    if (!Array.isArray(data) || data.length < 2) {
+      return data;
+    }
+
+    const enhancedData = [...data];
+    
+    // Add productId to headers if not present
+    const headers = [...data[0]];
+    if (!headers.includes('productId')) {
+      headers.push('productId');
+      enhancedData[0] = headers;
+    }
+
+    // Add productId to each data row
+    for (let i = 1; i < enhancedData.length; i++) {
+      const row = [...data[i]];
+
+      const productIdIndex = data[0].indexOf('productId');
+      if (productIdIndex === -1) {
+        row.push(this.templateService.generateProductIdByFormat(this.selectedBarcodeType));
+      } else if (!row[productIdIndex]) {
+        row[productIdIndex] = this.templateService.generateProductIdByFormat(this.selectedBarcodeType);
+      }
+      
+      enhancedData[i] = row;
+    }
+
+    return enhancedData;
   }
 
   convertToJsonObjects(data: any[][]): any[] {

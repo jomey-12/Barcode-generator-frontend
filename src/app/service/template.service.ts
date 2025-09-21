@@ -1,5 +1,5 @@
 import { Injectable, signal, WritableSignal } from '@angular/core';
-import { Template, Widget } from '../models/template.model';
+import { BarcodeType, Template, Widget } from '../models/template.model';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 declare var JsBarcode: any;
@@ -299,6 +299,77 @@ export class TemplateService {
   }, 100); // Small delay to ensure CSS is applied
 }
 
+  generateProductIdByFormat(format: string) {
+    switch (format.toUpperCase()) {
+      case 'EAN13':
+        return this.generateNumericProductId(12, 'EAN13');
+      case 'UPC':
+        return this.generateNumericProductId(11, 'UPC');
+      case 'ITF14':
+        return this.generateNumericProductId(13, 'UPC');
+      case 'CODE128':
+      case 'CODE39':
+      default:
+        return this.generateAlphanumericProductId();
+    }
+  }
+
+  generateAlphanumericProductId(): string {
+    // Generate 3 random uppercase letters
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    let alphabetPart = '';
+    for (let i = 0; i < 3; i++) {
+      alphabetPart += letters.charAt(Math.floor(Math.random() * letters.length));
+    }
+    
+    // Generate 5 random digits
+    let digitPart = '';
+    for (let i = 0; i < 5; i++) {
+      digitPart += Math.floor(Math.random() * 10).toString();
+    }
+    
+    return alphabetPart + digitPart;
+  }
+
+  private generateNumericProductId(digitCount: number, type: string): string {
+    const digits = Array.from({length: digitCount}, () => 
+      Math.floor(Math.random() * 10).toString()
+    ).join('');
+    
+    const checkDigit = this.calculateModulo10CheckDigit(digits, type);
+    return digits + checkDigit;
+  }
+
+  private calculateModulo10CheckDigit(digits: string, type: string): string {
+    let oddSum = 0;
+    let evenSum = 0;
+    
+    if (type === 'EAN13') {
+      // Odd positions (1,3,5...) = weight 1, Even positions (2,4,6...) = weight 3
+      for (let i = 0; i < digits.length; i++) {
+        if (i % 2 === 0) {
+          oddSum += parseInt(digits[i]);
+        } else {
+          evenSum += parseInt(digits[i]);
+        }
+      }
+      const total = oddSum + (evenSum * 3);
+      return ((10 - (total % 10)) % 10).toString();
+      
+    } else {
+      // Odd positions (1,3,5...) = weight 3, Even positions (2,4,6...) = weight 1
+      for (let i = 0; i < digits.length; i++) {
+        if (i % 2 === 0) {
+          oddSum += parseInt(digits[i]);
+        } else {
+          evenSum += parseInt(digits[i]);
+        }
+      }
+      const total = (oddSum * 3) + evenSum;
+      return ((10 - (total % 10)) % 10).toString();
+    }
+  }
+
   async exportMultipleTemplatesWithProducts(template: Template, products: any[], templateName: string) {
     const pdf = new jsPDF({
       orientation: 'p',
@@ -575,6 +646,61 @@ export class TemplateService {
         element.appendChild(container);
         break;
 
+        case 'description-input':
+  // Create container with proper positioning
+  const descContainer = document.createElement('div');
+  descContainer.style.display = 'flex';
+  descContainer.style.alignItems = 'center';
+  descContainer.style.gap = '10px';
+
+  // Apply positioning class logic
+  const descLabelPosition = widget.descriptionLabelPosition || 'left';
+  switch (descLabelPosition) {
+    case 'top':
+      descContainer.style.flexDirection = 'column';
+      descContainer.style.alignItems = 'flex-start';
+      break;
+    case 'bottom':
+      descContainer.style.flexDirection = 'column-reverse';
+      descContainer.style.alignItems = 'flex-start';
+      break;
+    case 'left':
+      descContainer.style.flexDirection = 'row';
+      break;
+    case 'right':
+      descContainer.style.flexDirection = 'row-reverse';
+      break;
+  }
+
+  // Create label if not hidden
+  if (!widget.descriptionHideLabel && widget.descriptionLabelText) {
+    const descLabel = document.createElement('div');
+    descLabel.textContent = widget.descriptionLabelText;
+    descLabel.style.fontWeight = 'bold';
+    descLabel.style.color = '#2d3748';
+    descLabel.style.padding = '5px';
+    descLabel.style.display = 'inline-block';
+    descContainer.appendChild(descLabel);
+  }
+
+  // Create description field (multi-line text block)
+  const descInput = document.createElement('div');
+  descInput.textContent = widget.descriptionInputValue || '';
+  descInput.style.padding = '8px';
+  descInput.style.border = '1px solid #cbd5e0';
+  descInput.style.borderRadius = '4px';
+  descInput.style.fontSize = '14px';
+  descInput.style.background = 'white';
+  descInput.style.width = '100%';
+  descInput.style.minHeight = '40px';  // taller than input
+  descInput.style.wordWrap = 'break-word';
+  descInput.style.whiteSpace = 'pre-wrap'; // allow line breaks
+  descContainer.appendChild(descInput);
+
+  element.appendChild(descContainer);
+  break;
+
+
       case 'separator':
         const separator = document.createElement('div');
         separator.style.width = '100%';
@@ -611,6 +737,41 @@ export class TemplateService {
         }
         break;
 
+      case 'qr-code':
+  element.style.background = '#f7fafc';
+  element.style.padding = '10px';
+  element.style.borderRadius = '4px';
+  element.style.textAlign = 'center';
+  element.style.minHeight = '80px';
+  element.style.display = 'flex';
+  element.style.alignItems = 'center';
+  element.style.justifyContent = 'center';
+  element.style.color = '#718096';
+  element.style.flexDirection = 'column';
+
+  if (widget.hasQr) {
+    // Remove border when QR code is present
+    element.style.border = 'none';
+
+    // Generate actual QR code using canvas
+    const qrcodeCanvas = this.generateQRCodeCanvas('name'); // synchronous
+    if (qrcodeCanvas) {
+      const qrcodeImg = document.createElement('img');
+      qrcodeImg.src = qrcodeCanvas.toDataURL();
+      qrcodeImg.style.maxWidth = '100%';
+      qrcodeImg.style.height = 'auto';
+      element.appendChild(qrcodeImg);
+    } else {
+      element.style.border = '2px dashed #cbd5e0';
+      element.textContent = '🔳 QR Code Placeholder';
+    }
+  } else {
+    element.style.border = '2px dashed #cbd5e0';
+    element.textContent = '🔳 QR Code Placeholder';
+  }
+  break;
+
+
       case 'barcode':
         element.style.background = '#f7fafc';
         element.style.padding = '10px';
@@ -623,12 +784,14 @@ export class TemplateService {
         element.style.color = '#718096';
         element.style.flexDirection = 'column';
         
-        if (widget.hasBarcode && widget.productId) {
+        if (widget.hasBarcode) {
+          widget.barcodeType = widget.barcodeType ?? 'CODE128';
+          widget.productId = this.generateProductIdByFormat(widget.barcodeType);
           // Remove border when barcode is present
           element.style.border = 'none';
           
           // Generate actual barcode using canvas
-          const barcodeCanvas = this.generateBarcodeCanvas(widget.productId);
+          const barcodeCanvas = this.generateBarcodeCanvas(widget.productId, widget.barcodeType);
           if (barcodeCanvas) {
             const barcodeImg = document.createElement('img');
             barcodeImg.src = barcodeCanvas.toDataURL();
@@ -671,7 +834,7 @@ export class TemplateService {
 
     return element;
   }
-  private generateBarcodeCanvas(productId: string): HTMLCanvasElement {
+  private generateBarcodeCanvas(productId: string, barcodeType: BarcodeType): HTMLCanvasElement {
     const canvas = document.createElement('canvas');
 
     try {
@@ -686,7 +849,7 @@ export class TemplateService {
 
       // Generate barcode
       (window as any).JsBarcode(canvas, productId, {
-        format: 'CODE128',
+        format: barcodeType,
         width: 2,
         height: 60,
         displayValue: true,
@@ -701,4 +864,47 @@ export class TemplateService {
     }
     return canvas;
   }
+private generateQRCodeCanvas(data: any): HTMLCanvasElement {
+  const canvas = document.createElement('canvas');
+
+  try {
+    // Check if QRCode library is available
+    if (!(window as any).QRCode) {
+      console.warn('QRCode library not found. Make sure it is loaded.');
+    }
+
+    // Convert JSON object to string if needed
+    let qrText: string;
+    if (typeof data === 'object') {
+      qrText = JSON.stringify(data);
+    } else {
+      qrText = String(data);
+    }
+
+    // Set canvas size
+    canvas.width = 100;
+    canvas.height = 100;
+
+    // Generate QR code synchronously on canvas
+    (window as any).QRCode.toCanvas(canvas, qrText, {
+      width: 100,
+      margin: 2,
+      color: {
+        dark: '#000000',
+        light: '#ffffff'
+      }
+    }, function(err: any) {
+      if (err) {
+        console.error('Error generating QR code:', err);
+      }
+    });
+
+  } catch (error) {
+    console.error('Error generating QR code:', error);
+  }
+
+  return canvas;
+}
+
+
 }
