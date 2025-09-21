@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { Widget, Template, WidgetType, TemplateResponse, TemplateWrapper } from './models/template.model';
+import { Widget, Template, WidgetType, TemplateResponse, TemplateWrapper, BarcodeType } from './models/template.model';
 import { TemplateService } from './service/template.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -51,6 +51,7 @@ export class AppComponent implements OnInit {
   deletionFailedTimeout: any;
   showConfirmationDialog: boolean = false;
   templateToBeDeleted!: TemplateWrapper;
+  selectedBarcodeType: BarcodeType = 'CODE128';
 
   constructor(private templateService: TemplateService, private dataService: DataService, private cdr: ChangeDetectorRef) {}
 
@@ -88,6 +89,10 @@ export class AppComponent implements OnInit {
     this.updateJsonPreview();
   }
 
+  getBarcodeType(barcodeType: BarcodeType) {
+    this.selectedBarcodeType = barcodeType;
+  }
+
   createWidget(
     type: WidgetType,
     position: { x: number; y: number },
@@ -108,6 +113,7 @@ export class AppComponent implements OnInit {
       hideLabel: savedData?.hideLabel || false,
       labelPosition: savedData?.labelPosition || 'left',
       // Barcode properties
+      barcodeType: savedData?.barcodeType || 'CODE128',
       productId: savedData?.productId || '',
       hasBarcode: savedData?.hasBarcode || false,
       // Image properties
@@ -202,7 +208,7 @@ handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
 
   generateBarcode() {
     if (this.selectedWidget?.type === 'barcode') {
-      this.selectedWidget.productId = this.templateService.generateCode128ProductId();
+      this.selectedWidget.productId = this.templateService.generateProductIdByFormat(this.selectedBarcodeType);
       this.updateWidget({
         widget: this.selectedWidget,
         updates: { hasBarcode: true },
@@ -684,12 +690,12 @@ handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
     // Add productId to each data row
     for (let i = 1; i < enhancedData.length; i++) {
       const row = [...data[i]];
-      
+
       const productIdIndex = data[0].indexOf('productId');
       if (productIdIndex === -1) {
-        row.push(this.templateService.generateCode128ProductId());
+        row.push(this.templateService.generateProductIdByFormat(this.selectedBarcodeType));
       } else if (!row[productIdIndex]) {
-        row[productIdIndex] = this.templateService.generateCode128ProductId();
+        row[productIdIndex] = this.templateService.generateProductIdByFormat(this.selectedBarcodeType);
       }
       
       enhancedData[i] = row;
