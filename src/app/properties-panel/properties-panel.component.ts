@@ -19,6 +19,8 @@ export class PropertiesPanelComponent {
   @Output() widgetUpdate = new EventEmitter<{widget: Widget, updates: Partial<Widget>}>();
   @Output() generateBarcode = new EventEmitter<void>();
   @Output() clearBarcode = new EventEmitter<void>();
+  @Output() generateQr = new EventEmitter<string>();
+  @Output() clearQr = new EventEmitter<void>();
   @Output() imageUpload = new EventEmitter<{widget: Widget, imageData: string, imageName: string}>();
   @Output() separatorOrientation = new EventEmitter<{widget: Widget, orientation: string}>();
 
@@ -71,6 +73,10 @@ saveProductDetails() {
     this.showSuccess = false;
     this.successTimeout = null;
   }, 4000);
+}
+
+Test(){
+  console.log();
 }
 
 onOrientationChange(event: Event) {

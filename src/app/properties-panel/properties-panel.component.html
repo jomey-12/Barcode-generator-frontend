@@ -27,6 +27,26 @@
     </button>
   </div>
 
+    <!-- Barcode Properties -->
+  <div *ngIf="selectedWidget && selectedWidget.type === 'qr-code'" class="widget-properties">
+    <h4>Widget: QR Code</h4>
+    
+    
+    <button class="btn btn-primary full-width" (click)="generateQr.emit(jsonPreview)">
+       Generate QR Code
+    </button>
+    
+
+    
+    <button
+      *ngIf="selectedWidget.hasQr"
+      class="btn btn-secondary full-width"
+      (click)="clearQr.emit()"
+    >
+       Clear QR
+    </button>
+  </div>
+
   <!-- Image Properties -->
   <div *ngIf="selectedWidget && selectedWidget.type === 'image'" class="widget-properties">
     <h4>Widget: Image</h4>

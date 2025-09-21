@@ -6,12 +6,13 @@ import { CommonModule } from '@angular/common';
 import { BarcodeDirective } from '../directives/barcode.directive';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { FormsModule } from '@angular/forms';
+import { QRCodeComponent } from 'angularx-qrcode';
 
 @Component({
   selector: 'app-widget',
   templateUrl: './widget.component.html',
   standalone: true,
-  imports: [CommonModule, BarcodeDirective, DragDropModule, FormsModule],
+  imports: [CommonModule, BarcodeDirective, DragDropModule, FormsModule, QRCodeComponent],
   styleUrls: ['./widget.component.scss']
 })
 export class WidgetComponent {
@@ -34,6 +35,17 @@ export class WidgetComponent {
   startTop = 0;
 
   constructor(private elementRef: ElementRef) {}
+
+  get widgetWidth() {
+  return this.widget.width;
+}
+get widgetHeight() {
+  return this.widget.height === 'auto' ? null : this.widget.height;
+}
+get widgetHeightAuto() {
+  return this.widget.height === 'auto' ? 'auto' : null;
+}
+
 
   onSelect(event: Event) {
     event.stopPropagation();

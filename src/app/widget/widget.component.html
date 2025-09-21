@@ -4,9 +4,9 @@
   [class.selected]="isSelected"
   [style.left.px]="widget.left"
   [style.top.px]="widget.top"
-  [style.width.px]="widget.width"
-  [style.height.px]="widget.height === 'auto' ? null : widget.height"
-  [style.height]="widget.height === 'auto' ? 'auto' : null"
+[style.width.px]="widgetWidth"
+[style.height.px]="widgetHeight"
+[style.height]="widgetHeightAuto"
    [style.transform]="widget.orientation === 'vertical' ? 'rotate(90deg)' : 'rotate(0deg)'"
   (mousedown)="onMouseDown($event)"
   (click)="onSelect($event)"
@@ -35,6 +35,22 @@
       [productId]="widget.productId"
     ></svg>
   </div>
+
+<!-- QR Code Widget -->
+<div *ngIf="widget.type === 'qr-code'" class="widget-barcode">
+  <div *ngIf="!widget.hasQr" >
+    🔳 QR Code Placeholder<br><small>Configure properties to generate</small>
+  </div>
+  <div *ngIf="widget.hasQr">
+    <qrcode
+      appQrCode
+      [qrdata]="widget.qrData || ''"
+      [width]="100"
+      [errorCorrectionLevel]="'M'">
+    </qrcode>
+  </div>
+</div>
+
 
   <!-- Image Widget -->
   <div *ngIf="widget.type === 'image'" class="widget-image">
@@ -78,6 +94,8 @@
   (click)="$event.stopPropagation()"
 ></textarea>
   </div>
+
+
 
   <!-- Resize Handle -->
 <!-- Resize Handles -->

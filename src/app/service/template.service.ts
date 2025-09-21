@@ -628,6 +628,41 @@ export class TemplateService {
         }
         break;
 
+      case 'qr-code':
+  element.style.background = '#f7fafc';
+  element.style.padding = '10px';
+  element.style.borderRadius = '4px';
+  element.style.textAlign = 'center';
+  element.style.minHeight = '80px';
+  element.style.display = 'flex';
+  element.style.alignItems = 'center';
+  element.style.justifyContent = 'center';
+  element.style.color = '#718096';
+  element.style.flexDirection = 'column';
+
+  if (widget.hasQr) {
+    // Remove border when QR code is present
+    element.style.border = 'none';
+
+    // Generate actual QR code using canvas
+    const qrcodeCanvas = this.generateQRCodeCanvas('name'); // synchronous
+    if (qrcodeCanvas) {
+      const qrcodeImg = document.createElement('img');
+      qrcodeImg.src = qrcodeCanvas.toDataURL();
+      qrcodeImg.style.maxWidth = '100%';
+      qrcodeImg.style.height = 'auto';
+      element.appendChild(qrcodeImg);
+    } else {
+      element.style.border = '2px dashed #cbd5e0';
+      element.textContent = '🔳 QR Code Placeholder';
+    }
+  } else {
+    element.style.border = '2px dashed #cbd5e0';
+    element.textContent = '🔳 QR Code Placeholder';
+  }
+  break;
+
+
       case 'barcode':
         element.style.background = '#f7fafc';
         element.style.padding = '10px';
@@ -719,4 +754,47 @@ export class TemplateService {
     }
     return canvas;
   }
+private generateQRCodeCanvas(data: any): HTMLCanvasElement {
+  const canvas = document.createElement('canvas');
+
+  try {
+    // Check if QRCode library is available
+    if (!(window as any).QRCode) {
+      console.warn('QRCode library not found. Make sure it is loaded.');
+    }
+
+    // Convert JSON object to string if needed
+    let qrText: string;
+    if (typeof data === 'object') {
+      qrText = JSON.stringify(data);
+    } else {
+      qrText = String(data);
+    }
+
+    // Set canvas size
+    canvas.width = 100;
+    canvas.height = 100;
+
+    // Generate QR code synchronously on canvas
+    (window as any).QRCode.toCanvas(canvas, qrText, {
+      width: 100,
+      margin: 2,
+      color: {
+        dark: '#000000',
+        light: '#ffffff'
+      }
+    }, function(err: any) {
+      if (err) {
+        console.error('Error generating QR code:', err);
+      }
+    });
+
+  } catch (error) {
+    console.error('Error generating QR code:', error);
+  }
+
+  return canvas;
+}
+
+
 }

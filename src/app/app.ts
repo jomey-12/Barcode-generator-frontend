@@ -118,6 +118,8 @@ export class AppComponent implements OnInit {
       fontWeight: savedData?.fontWeight || 'normal',
       //separator properties
       orientation: savedData?.orientation || 'horizontal',
+      hasQr: savedData?.hasQr || false,
+      qrData: savedData?.qrData || '',
     };
     return widget;
   }
@@ -126,6 +128,7 @@ export class AppComponent implements OnInit {
     const widthMap = {
       separator: 200,
       'labeled-input': 250,
+      'qr-code': 100,
       image: 200,
       barcode: 150,
     };
@@ -212,6 +215,23 @@ handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
       this.updateWidget({
         widget: this.selectedWidget,
         updates: { hasBarcode: false, productId: '' },
+      });
+    }
+  }
+    generateQr(qrData: string) {
+    if (this.selectedWidget?.type === 'qr-code') {
+      this.updateWidget({
+        widget: this.selectedWidget,
+        updates: { hasQr: true , qrData: this.jsonPreview},
+      });
+    }
+  }
+
+  clearQr() {
+    if (this.selectedWidget?.type === 'qr-code') {
+      this.updateWidget({
+        widget: this.selectedWidget,
+        updates: { hasQr: false, qrData:'' },
       });
     }
   }

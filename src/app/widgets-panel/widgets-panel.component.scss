@@ -1,4 +1,5 @@
 .widgets-panel {
+      margin-top: -20px;
 
   h3{
     color: white;
@@ -6,7 +7,7 @@
 
   .templates-list {
     //  background: rgba(255, 255, 255, 0.95);
-  border-radius: 15px;
+  //border-radius: 15px;
   // padding: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     max-height: 230px;
@@ -86,13 +87,23 @@
   grid-template-columns: repeat(2, 1fr); /* 2 columns */
   grid-template-rows: repeat(2, 1fr);    /* 2 rows */
   gap: 20px;
-  margin-top: 15px;
+      margin-top: 15px;
+    max-height: 250px;
+    overflow-x: auto;
+    padding-right: 10px;
+    padding-top: 10px;
 }
 
 .widget-item {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  padding: 30px 20px;
+ height: 88px;
+    /* padding: 30px 20px; */
+    width: 100px;
+    display: flex;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
   border-radius: 12px;
   text-align: center;
   font-weight: 600;
@@ -180,6 +191,37 @@
   }
 }
 .saved-templates{
-  margin-top: 60px;
+  margin-top: 40px;
 }
 
+/* Webkit browsers (Chrome, Edge, Safari) */
+::-webkit-scrollbar {
+  width: 8px;                /* vertical scrollbar width */
+  height: 8px;               /* horizontal scrollbar height */
+  background: transparent;   /* remove track background */
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;   /* completely transparent track */
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(100, 100, 100, 0.5); /* semi-transparent thumb */
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 100, 100, 0.8); /* darker on hover */
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 100, 100, 0.5) transparent; /* thumb | track */
+}
+
+/* Optional hover effect for Firefox (using pseudo-class on container) */
+.scroll-container:hover {
+  scrollbar-color: rgba(100, 100, 100, 0.8) transpare
+}
