@@ -1,5 +1,3 @@
-
-
 import { Component, Input, Output, EventEmitter, AfterViewInit, ElementRef } from '@angular/core';
 import { Widget } from '../models/template.model';
 import { CommonModule } from '@angular/common';
@@ -13,7 +11,7 @@ import { QRCodeComponent } from 'angularx-qrcode';
   templateUrl: './widget.component.html',
   standalone: true,
   imports: [CommonModule, BarcodeDirective, DragDropModule, FormsModule, QRCodeComponent],
-  styleUrls: ['./widget.component.scss']
+  styleUrls: ['./widget.component.scss'],
 })
 export class WidgetComponent {
   @Input() widget!: Widget;
@@ -38,15 +36,14 @@ export class WidgetComponent {
   constructor(private elementRef: ElementRef) {}
 
   get widgetWidth() {
-  return this.widget.width;
-}
-get widgetHeight() {
-  return this.widget.height === 'auto' ? null : this.widget.height;
-}
-get widgetHeightAuto() {
-  return this.widget.height === 'auto' ? 'auto' : null;
-}
-
+    return this.widget.width;
+  }
+  get widgetHeight() {
+    return this.widget.height === 'auto' ? null : this.widget.height;
+  }
+  get widgetHeightAuto() {
+    return this.widget.height === 'auto' ? 'auto' : null;
+  }
 
   onSelect(event: Event) {
     event.stopPropagation();
@@ -64,10 +61,12 @@ get widgetHeightAuto() {
   }
 
   onMouseDown(event: MouseEvent) {
-    if (event.target instanceof Element &&
+    if (
+      event.target instanceof Element &&
       (event.target.closest('.delete-widget') ||
         event.target.closest('.image-upload-btn') ||
-        event.target.closest('.resize-handle'))) {
+        event.target.closest('.resize-handle'))
+    ) {
       return;
     }
 
@@ -92,136 +91,40 @@ get widgetHeightAuto() {
     document.addEventListener('mouseup', onMouseUp);
   }
 
-onResizeStart(event: MouseEvent, direction: string) {
-  event.preventDefault();
-  event.stopPropagation();
+  public onResizeStart(event: MouseEvent, direction: string) {
+    event.preventDefault();
+    event.stopPropagation();
 
-  this.resizeDirection = direction;
-  this.isResizing = true;
-  this.startX = event.clientX;
-  this.startY = event.clientY;
-  this.startWidth = this.widget.width;
-  
-  // Handle the height properly - get actual DOM height if 'auto'
-if (this.widget.height === 'auto') {
-  const element = this.elementRef.nativeElement;
-  this.startHeight = element.offsetHeight;
-  this.widget.height = this.startHeight; // set numeric for resize
-} else {
-  this.startHeight = this.widget.height;
-}
+    this.resizeDirection = direction;
+    this.isResizing = true;
+    this.startX = event.clientX;
+    this.startY = event.clientY;
+    this.startWidth = this.widget.width;
 
-  
-  this.startLeft = this.widget.left;
-  this.startTop = this.widget.top;
+    // Handle the height properly - get actual DOM height if 'auto'
+    if (this.widget.height === 'auto') {
+      const element = this.elementRef.nativeElement;
+      this.startHeight = element.offsetHeight;
+      this.widget.height = this.startHeight; // set numeric for resize
+    } else {
+      this.startHeight = this.widget.height;
+    }
 
-  const onMouseMove = (e: MouseEvent) => this.resizeHandler(e);
-  const onMouseUp = () => {
-  
-    this.isResizing = false;
-    document.removeEventListener('mousemove', onMouseMove);
-    document.removeEventListener('mouseup', onMouseUp);
-  };
+    this.startLeft = this.widget.left;
+    this.startTop = this.widget.top;
 
-  document.addEventListener('mousemove', onMouseMove);
-  document.addEventListener('mouseup', onMouseUp);
-}
+    const onMouseMove = (e: MouseEvent) => this.resizeHandler(e);
+    const onMouseUp = () => {
+      this.isResizing = false;
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    };
 
-private resizeHandler(event: MouseEvent) {
-  if (!this.isResizing) return;
-
-  const dx = event.clientX - this.startX;
-  const dy = event.clientY - this.startY;
-  const minWidth = 50;
-  const minHeight = 50;
-
-  const oldValues = {
-    width: this.widget.width,
-    height: this.widget.height,
-    left: this.widget.left,
-    top: this.widget.top
-  };
-
-  switch (this.resizeDirection) {
-    case 'right':
-      this.widget.width = Math.max(minWidth, this.startWidth + dx);
-      break;
-      
-    case 'left':
-      const newWidthLeft = Math.max(minWidth, this.startWidth - dx);
-      const actualDxLeft = this.startWidth - newWidthLeft;
-      this.widget.width = newWidthLeft;
-      this.widget.left = this.startLeft + actualDxLeft;
-      break;
-      
-    case 'bottom':
-      this.widget.height = Math.max(minHeight, this.startHeight + dy);
-
-      break;
-      
-    case 'top':
-      const newHeightTop = Math.max(minHeight, this.startHeight - dy);
-      const actualDyTop = this.startHeight - newHeightTop;
-      this.widget.height = newHeightTop;
-      this.widget.top = this.startTop + actualDyTop;
-      break;
-      
-    case 'bottom-right':
-      this.widget.width = Math.max(minWidth, this.startWidth + dx);
-      this.widget.height = Math.max(minHeight, this.startHeight + dy);
-      break;
-      
-    case 'bottom-left':
-      const newWidthBL = Math.max(minWidth, this.startWidth - dx);
-      const actualDxBL = this.startWidth - newWidthBL;
-      this.widget.width = newWidthBL;
-      this.widget.left = this.startLeft + actualDxBL;
-      this.widget.height = Math.max(minHeight, this.startHeight + dy);
-      break;
-      
-    case 'top-right':
-      this.widget.width = Math.max(minWidth, this.startWidth + dx);
-      const newHeightTR = Math.max(minHeight, this.startHeight - dy);
-      const actualDyTR = this.startHeight - newHeightTR;
-      this.widget.height = newHeightTR;
-      this.widget.top = this.startTop + actualDyTR;
-      break;
-      
-    case 'top-left':
-      const newWidthTL = Math.max(minWidth, this.startWidth - dx);
-      const actualDxTL = this.startWidth - newWidthTL;
-      this.widget.width = newWidthTL;
-      this.widget.left = this.startLeft + actualDxTL;
-      
-      const newHeightTL = Math.max(minHeight, this.startHeight - dy);
-      const actualDyTL = this.startHeight - newHeightTL;
-      this.widget.height = newHeightTL;
-      this.widget.top = this.startTop + actualDyTL;
-      break;
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
   }
 
-  // Debug logging for bottom resize specifically
-  if (this.resizeDirection === 'bottom') {
-    console.log('Bottom resize values:', {
-      old: oldValues,
-      new: {
-        width: this.widget.width,
-        height: this.widget.height,
-        left: this.widget.left,
-        top: this.widget.top
-      }
-    });
-  }
-
-  // Force change detection by emitting the resize event
-  this.widgetResize.emit({
-    widget: this.widget,
-    width: this.widget.width,
-    height: this.widget.height
-  });
-}
-
-  onImageUpload(event: Event) {
+  public onImageUpload(event: Event) {
     event.stopPropagation();
     event.preventDefault();
 
@@ -238,7 +141,7 @@ private resizeHandler(event: MouseEvent) {
           this.imageUpload.emit({
             widget: this.widget,
             imageData: imageData,
-            imageName: file.name
+            imageName: file.name,
           });
         };
         reader.readAsDataURL(file);
@@ -247,8 +150,102 @@ private resizeHandler(event: MouseEvent) {
     input.click();
   }
 
-  onInputChange(event: Event) {
+  public onInputChange(event: Event) {
     const target = event.target as HTMLInputElement;
     this.widget.inputValue = target.value;
+  }
+
+  private resizeHandler(event: MouseEvent) {
+    if (!this.isResizing) return;
+
+    const dx = event.clientX - this.startX;
+    const dy = event.clientY - this.startY;
+    const minWidth = 50;
+    const minHeight = 50;
+
+    const oldValues = {
+      width: this.widget.width,
+      height: this.widget.height,
+      left: this.widget.left,
+      top: this.widget.top,
+    };
+
+    switch (this.resizeDirection) {
+      case 'right':
+        this.widget.width = Math.max(minWidth, this.startWidth + dx);
+        break;
+
+      case 'left':
+        const newWidthLeft = Math.max(minWidth, this.startWidth - dx);
+        const actualDxLeft = this.startWidth - newWidthLeft;
+        this.widget.width = newWidthLeft;
+        this.widget.left = this.startLeft + actualDxLeft;
+        break;
+
+      case 'bottom':
+        this.widget.height = Math.max(minHeight, this.startHeight + dy);
+
+        break;
+
+      case 'top':
+        const newHeightTop = Math.max(minHeight, this.startHeight - dy);
+        const actualDyTop = this.startHeight - newHeightTop;
+        this.widget.height = newHeightTop;
+        this.widget.top = this.startTop + actualDyTop;
+        break;
+
+      case 'bottom-right':
+        this.widget.width = Math.max(minWidth, this.startWidth + dx);
+        this.widget.height = Math.max(minHeight, this.startHeight + dy);
+        break;
+
+      case 'bottom-left':
+        const newWidthBL = Math.max(minWidth, this.startWidth - dx);
+        const actualDxBL = this.startWidth - newWidthBL;
+        this.widget.width = newWidthBL;
+        this.widget.left = this.startLeft + actualDxBL;
+        this.widget.height = Math.max(minHeight, this.startHeight + dy);
+        break;
+
+      case 'top-right':
+        this.widget.width = Math.max(minWidth, this.startWidth + dx);
+        const newHeightTR = Math.max(minHeight, this.startHeight - dy);
+        const actualDyTR = this.startHeight - newHeightTR;
+        this.widget.height = newHeightTR;
+        this.widget.top = this.startTop + actualDyTR;
+        break;
+
+      case 'top-left':
+        const newWidthTL = Math.max(minWidth, this.startWidth - dx);
+        const actualDxTL = this.startWidth - newWidthTL;
+        this.widget.width = newWidthTL;
+        this.widget.left = this.startLeft + actualDxTL;
+
+        const newHeightTL = Math.max(minHeight, this.startHeight - dy);
+        const actualDyTL = this.startHeight - newHeightTL;
+        this.widget.height = newHeightTL;
+        this.widget.top = this.startTop + actualDyTL;
+        break;
+    }
+
+    // Debug logging for bottom resize specifically
+    if (this.resizeDirection === 'bottom') {
+      console.log('Bottom resize values:', {
+        old: oldValues,
+        new: {
+          width: this.widget.width,
+          height: this.widget.height,
+          left: this.widget.left,
+          top: this.widget.top,
+        },
+      });
+    }
+
+    // Force change detection by emitting the resize event
+    this.widgetResize.emit({
+      widget: this.widget,
+      width: this.widget.width,
+      height: this.widget.height,
+    });
   }
 }

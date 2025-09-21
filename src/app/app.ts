@@ -1,5 +1,12 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { Widget, Template, WidgetType, TemplateResponse, TemplateWrapper, BarcodeType } from './models/template.model';
+import {
+  Widget,
+  Template,
+  WidgetType,
+  TemplateResponse,
+  TemplateWrapper,
+  BarcodeType,
+} from './models/template.model';
 import { TemplateService } from './service/template.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -8,11 +15,8 @@ import { HeaderComponent } from './header/header.component';
 import { PropertiesPanelComponent } from './properties-panel/properties-panel.component';
 import { WidgetsPanelComponent } from './widgets-panel/widgets-panel.component';
 import { SaveTemplateDialogComponent } from './save-template-dialog/save-template-dialog.component';
-import * as XLSX from 'xlsx';
 import { ImportTemplateDialogComponent } from './app-import-template-dialog/app-import-template-dialog';
 import { jsPDF } from 'jspdf';
-import JSZip from 'jszip';
-import { saveAs } from 'file-saver';
 import { DataService } from './service/data.service';
 import { HttpClientModule } from '@angular/common/http';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
@@ -32,7 +36,8 @@ import { Product } from './models/product.model';
     SaveTemplateDialogComponent,
     PropertiesPanelComponent,
     ImportTemplateDialogComponent,
-    ConfirmationDialogComponent],
+    ConfirmationDialogComponent,
+  ],
   styleUrls: ['./app.scss'],
 })
 export class AppComponent implements OnInit {
@@ -47,21 +52,26 @@ export class AppComponent implements OnInit {
   jsonPreview = '';
   showImportDialog = false;
   importedData: any;
-  widgets2: Widget[] = [];  deletionFailed: string = '';
+  widgets2: Widget[] = [];
+  deletionFailed: string = '';
   deletionFailedTimeout: any;
   showConfirmationDialog: boolean = false;
   templateToBeDeleted!: TemplateWrapper;
   selectedBarcodeType: BarcodeType = 'CODE128';
 
-  constructor(private templateService: TemplateService, private dataService: DataService, private cdr: ChangeDetectorRef) {}
+  constructor(
+    private templateService: TemplateService,
+    private dataService: DataService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
     this.dataService.getAllTemplates().subscribe((templates: TemplateResponse[]) => {
-      this.templates = templates.map(t => ({
+      this.templates = templates.map((t) => ({
         referenceId: t.templateReferenceId,
-        templateDetails: JSON.parse(t.templateJson)
+        templateDetails: JSON.parse(t.templateJson),
       }));
-      this.cdr.detectChanges()
+      this.cdr.detectChanges();
     });
     this.updateJsonPreview();
   }
@@ -205,16 +215,18 @@ export class AppComponent implements OnInit {
     });
   }
 
-handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
+  handleSeparatorOrientation(event: { widget: Widget; orientation: string }) {
     this.updateWidget({
       widget: event.widget,
-    updates: {orientation: event.orientation}
-  })
+      updates: { orientation: event.orientation },
+    });
   }
 
   generateBarcode() {
     if (this.selectedWidget?.type === 'barcode') {
-      this.selectedWidget.productId = this.templateService.generateProductIdByFormat(this.selectedBarcodeType);
+      this.selectedWidget.productId = this.templateService.generateProductIdByFormat(
+        this.selectedBarcodeType
+      );
       this.updateWidget({
         widget: this.selectedWidget,
         updates: { hasBarcode: true },
@@ -242,11 +254,11 @@ handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
       });
     }
   }
-    generateQr(qrData: string) {
+  generateQr(qrData: string) {
     if (this.selectedWidget?.type === 'qr-code') {
       this.updateWidget({
         widget: this.selectedWidget,
-        updates: { hasQr: true , qrData: this.jsonPreview},
+        updates: { hasQr: true, qrData: this.jsonPreview },
       });
     }
   }
@@ -255,7 +267,7 @@ handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
     if (this.selectedWidget?.type === 'qr-code') {
       this.updateWidget({
         widget: this.selectedWidget,
-        updates: { hasQr: false, qrData:'' },
+        updates: { hasQr: false, qrData: '' },
       });
     }
   }
@@ -278,7 +290,7 @@ handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
     //reset input values
     const templateCopy: Template = {
       ...template,
-      widgets: template.widgets.map(widget => ({
+      widgets: template.widgets.map((widget) => ({
         ...widget,
         inputValue: undefined,
         productId: undefined,
@@ -288,17 +300,19 @@ handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
         qrData: undefined,
         hasQr: undefined,
         descriptionInputValue: undefined,
-      }))
+      })),
     };
 
-    this.dataService.createTemplate({
+    this.dataService
+      .createTemplate({
         name: name,
-      templateJson: templateCopy
-    }).subscribe((saved: TemplateResponse) => {
+        templateJson: templateCopy,
+      })
+      .subscribe((saved: TemplateResponse) => {
         this.currentTemplate = {
           referenceId: saved.templateReferenceId,
-        templateDetails: JSON.parse(saved.templateJson)
-      }
+          templateDetails: JSON.parse(saved.templateJson),
+        };
         this.templateName = name;
         this.templates = [...this.templates, this.currentTemplate];
         this.cdr.detectChanges();
@@ -308,7 +322,9 @@ handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
   loadTemplate(template: TemplateWrapper) {
     this.templateName = template.templateDetails.name;
     this.currentTemplate = template;
-    this.widgets = template.templateDetails.widgets.map((w) => this.createWidget(w.type, { x: 0, y: 0 }, w));
+    this.widgets = template.templateDetails.widgets.map((w) =>
+      this.createWidget(w.type, { x: 0, y: 0 }, w)
+    );
     this.selectedWidget = null;
     this.updateJsonPreview();
 
@@ -416,174 +432,10 @@ handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
     this.showImportDialog = true;
   }
 
-  //   handleImportConfirmed(data: any) {
-  //   this.importedData = data;
-  //   this.showImportDialog = false;
-
-  //   if (!Array.isArray(data) || data.length < 2) {
-  //     alert('The imported file does not contain data rows.');
-  //     return;
-  //   }
-
-  //   const headers: string[] = data[0];
-  //   const rows: any[][] = data.slice(1);
-
-  //   // Prepare an array to hold all JSON objects from each row
-  //   const allJsonData: any[] = [];
-
-  //   rows.forEach(row => {
-  //     const jsonData: any = {
-  //       productId: '', // Fill if applicable
-  //       timestamp: new Date().toISOString()
-  //     };
-
-  //     headers.forEach((header, idx) => {
-  //       if (/^image/i.test(header.trim())) {
-  //         jsonData[header] = row[idx] || null;
-  //       } else {
-  //         jsonData[header] = row[idx] || null;
-  //       }
-  //     });
-
-  //     // Remove undefined values except reserved keys
-  //     Object.keys(jsonData).forEach(key => {
-  //       if (jsonData[key] === undefined && key !== 'productId' && key !== 'timestamp') {
-  //         delete jsonData[key];
-  //       }
-  //     });
-
-  //     allJsonData.push(jsonData);
-  //   });
-
-  //   // Convert all imported rows to formatted JSON string for display
-  //   this.jsonPreview = JSON.stringify(allJsonData, null, 2);
-
-  //   alert('Import successful. Processed JSON data:\n' + this.jsonPreview);
-
-  //   // Optional: further processing to update widgets or UI state with allJsonData
-  // }
-
   handleImportCancel() {
     this.showImportDialog = false;
   }
 
-  //   handleImportConfirmed(data: any) {
-  //   this.importedData = data;
-  //   this.showImportDialog = false;
-
-  //   if (!Array.isArray(data) || data.length < 2) {
-  //     alert('The imported file does not contain data rows.');
-  //     return;
-  //   }
-
-  //   // Call PDF + ZIP generation
-  //   this.generatePDFsAndDownloadZip(data);
-  // }
-
-  //   async generatePDFsAndDownloadZip(data: any[][]): Promise<void> {
-  //     if (!data || data.length < 2) {
-  //       alert('No data to generate PDFs.');
-  //       return;
-  //     }
-
-  //     const headers: string[] = data[0];
-  //     const rows: any[][] = data.slice(1);
-
-  //     // Create a new ZIP archive
-  //     const zip = new JSZip();
-
-  //     for (let i = 0; i < rows.length; i++) {
-  //       const row = rows[i];
-
-  //       // Map row data to key-value object by headers
-  //       const rowData: any = {};
-  //       headers.forEach((header, idx) => {
-  //         rowData[header] = row[idx] || '';
-  //       });
-
-  //       // Generate PDF content from template and rowData
-  //       // For simplicity, here's a basic example generating text-based PDF
-  //       const pdf = new jsPDF();
-
-  //       pdf.setFontSize(16);
-  //       pdf.text(`Template: ${this.templateName}`, 10, 10);
-
-  //       let yPos = 20;
-  //       for (const key of headers) {
-  //         const value = rowData[key];
-  //         pdf.setFontSize(12);
-  //         pdf.text(`${key}: ${value}`, 10, yPos);
-  //         yPos += 10;
-  //       }
-
-  //       // Generate PDF as Blob
-  //       const pdfBlob = pdf.output('blob');
-
-  //       // Add this PDF to the ZIP file, name with row number or unique ID
-  //       zip.file(`template_${i + 1}.pdf`, pdfBlob);
-  //     }
-
-  //     // Generate ZIP Blob
-  //     const zipBlob = await zip.generateAsync({ type: 'blob' });
-
-  //     // Trigger download of ZIP file
-  //     saveAs(zipBlob, `${this.templateName}_bulk_pdfs.zip`);
-  //   }
-
-  // handleImportConfirmed(data: any) {
-  //   this.importedData = data;
-  //   this.showImportDialog = false;
-
-  //   if (!Array.isArray(data) || data.length < 2) {
-  //     alert('The imported file does not contain data rows.');
-  //     return;
-  //   }
-
-  //   // Assuming selectedTemplateId is currently selected template's ID in your app
-  //   const selectedTemplateId = this.templates.find((t) => t.name === this.templateName)?.id;
-
-  //   if (!selectedTemplateId) {
-  //     alert('No template selected.');
-  //     return;
-  //   }
-
-  //   // this.generateBulkPdfsZip(data, selectedTemplateId);
-  // }
-
-  // async generateBulkPdfsZip(data: any[][], selectedTemplateId: number) {
-  //   if (!Array.isArray(data) || data.length < 2) {
-  //     alert('No data to generate PDFs.');
-  //     return;
-  //   }
-
-  //   const headers: string[] = data[0];
-  //   const rows: any[][] = data.slice(1);
-
-  //   const zip = new JSZip();
-
-  //   // Load base template widgets (deep clone)
-  //   const baseWidgets = this.templateService.getTemplateById(selectedTemplateId);
-
-  //   for (let i = 0; i < rows.length; i++) {
-  //     const row = rows[i];
-  //     // Convert row to JSON object by headers
-  //     const rowData: any = {};
-  //     headers.forEach((h, k) => (rowData[h] = row[k] || ''));
-
-  //     // Fill widgets with row data
-  //     const filledWidgets = this.fillWidgetsWithRowData(baseWidgets, rowData);
-
-  //     // Generate PDF Blob
-  //     const pdfBlob = await this.generatePdfFromWidgets(filledWidgets, `template_${i + 1}.pdf`);
-
-  //     // Add PDF blob to ZIP
-  //     zip.file(`template_${i + 1}.pdf`, pdfBlob);
-  //   }
-
-  //   // Generate ZIP and trigger download
-  //   const zipBlob = await zip.generateAsync({ type: 'blob' });
-  //   saveAs(zipBlob, `BulkTemplates_${new Date().toISOString()}.zip`);
-  // }
   fillWidgetsWithRowData(widgets: Widget[], rowData: any): Widget[] {
     return widgets.map((widget) => {
       const clone = { ...widget };
@@ -655,7 +507,9 @@ handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
     const imageColumns = headers.filter((h: string) => h.toLowerCase().includes('image'));
     const imageCount = this.getImageCountFromData(enhancedData);
 
-  console.log(`Processing data with ${imageColumns.length} image columns and ${imageCount} images`);
+    console.log(
+      `Processing data with ${imageColumns.length} image columns and ${imageCount} images`
+    );
 
     this.onJsonImported(enhancedData);
 
@@ -670,37 +524,37 @@ handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
     if (!selectedTemplateId) {
       return;
     }
-    this.dataService.getTemplateById(selectedTemplateId).subscribe( async (response: TemplateResponse) => {
-      const template = JSON.parse(response.templateJson);
-      if (!template || products2D.length === 0) {
-        console.warn('Missing template or product data');
-        return;
-      }
+    this.dataService
+      .getTemplateById(selectedTemplateId)
+      .subscribe(async (response: TemplateResponse) => {
+        const template = JSON.parse(response.templateJson);
+        if (!template || products2D.length === 0) {
+          console.warn('Missing template or product data');
+          return;
+        }
 
-      try {
-        // Extract headers (first row)
-        const headers = products2D[0];
+        try {
+          const headers = products2D[0];
 
-        // Convert each subsequent row to an object based on headers
-        const products = products2D.slice(1).map((row) => {
-          const product: any = {};
-          row.forEach((cell: string | number, index: number) => {
-            product[headers[index]] = cell;
+          const products = products2D.slice(1).map((row) => {
+            const product: any = {};
+            row.forEach((cell: string | number, index: number) => {
+              product[headers[index]] = cell;
+            });
+            return product;
           });
-          return product;
-        });
-        await this.templateService.exportMultipleTemplatesWithProducts(
-          template,
-          products,
-          'TemplateExport'
-        );
-        this.widgets2 = this.templateService.widgets();
+          await this.templateService.exportMultipleTemplatesWithProducts(
+            template,
+            products,
+            'TemplateExport'
+          );
+          this.widgets2 = this.templateService.widgets();
 
-        console.log('PDF export success');
-      } catch (error) {
-        console.error('PDF export failed:', error);
-      }
-    });
+          console.log('PDF export success');
+        } catch (error) {
+          console.error('PDF export failed:', error);
+        }
+      });
   }
 
   private addProductIdsToData(data: any[]): any[] {
@@ -709,7 +563,7 @@ handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
     }
 
     const enhancedData = [...data];
-    
+
     // Add productId to headers if not present
     const headers = [...data[0]];
     if (!headers.includes('productId')) {
@@ -725,9 +579,11 @@ handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
       if (productIdIndex === -1) {
         row.push(this.templateService.generateProductIdByFormat(this.selectedBarcodeType));
       } else if (!row[productIdIndex]) {
-        row[productIdIndex] = this.templateService.generateProductIdByFormat(this.selectedBarcodeType);
+        row[productIdIndex] = this.templateService.generateProductIdByFormat(
+          this.selectedBarcodeType
+        );
       }
-      
+
       enhancedData[i] = row;
     }
 
@@ -740,7 +596,7 @@ handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
     }
 
     const headers = data[0];
-    const jsonObjects = data.slice(1).map(row => {
+    const jsonObjects = data.slice(1).map((row) => {
       const obj: any = {};
       headers.forEach((header, index) => {
         obj[header] = row[index];
@@ -751,12 +607,10 @@ handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
     return jsonObjects;
   }
 
-  convertToProductRequests(
-    jsonObjects: any[] 
-  ): Product[] {
-    return jsonObjects.map(obj => {
+  convertToProductRequests(jsonObjects: any[]): Product[] {
+    return jsonObjects.map((obj) => {
       const productId = String(obj.productId || obj.ProductId || obj.id || '').trim();
-      
+
       if (!productId) {
         throw new Error('ProductId not found in object: ' + JSON.stringify(obj));
       }
@@ -764,7 +618,7 @@ handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
       return {
         productId: productId,
         productDetails: obj,
-        templateReferenceId: this.currentTemplate.referenceId
+        templateReferenceId: this.currentTemplate.referenceId,
       };
     });
   }
@@ -775,8 +629,8 @@ handleSeparatorOrientation(event:{widget: Widget, orientation: string}){
 
   private getImageCountFromData(data: any[][]): number {
     let count = 0;
-  data.slice(1).forEach(row => {
-    row.forEach(cell => {
+    data.slice(1).forEach((row) => {
+      row.forEach((cell) => {
         if (typeof cell === 'string' && cell.startsWith('data:image/')) {
           count++;
         }

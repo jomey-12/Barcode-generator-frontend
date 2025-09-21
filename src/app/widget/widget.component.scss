@@ -2,7 +2,6 @@
 .dropped-widget {
   position: absolute;
   cursor: move;
-  //padding: 5px;
   min-width: 100px;
   border: 2px solid transparent;
   transition: all 0.2s ease;
@@ -17,37 +16,6 @@
     border-color: #764ba2;
     box-shadow: 0 0 15px rgba(118, 75, 162, 0.4);
   }
-//   &.selected:has(.widget-separator.horizontal){
-//     transform-origin: center center;
-// transform: rotateX(0deg);
-//   }
-
-//     &.selected:has(.widget-separator.vertical){
-//       transform-origin: center center;
-// transform: rotate(90deg) translateX(0%);
-//   }
-
-//  &.selected:has(.widget-separator.horizontal) {
-//   transform-origin: center center;
-//   transform: rotate(0deg);
-// }
-
-// &.selected:has(.widget-separator.vertical) {
-//   transform-origin: center center;
-//   transform: rotate(90deg);
-// }
-
-// .widget-separator.horizontal {
-//   transform-origin: center center;
-//   transform: rotate(0deg);
-// }
-
-// .widget-separator.vertical {
-//   transform-origin: center center;
-//   transform: rotate(90deg);
-// }
-
-
 
   .delete-widget {
     position: absolute;
@@ -275,23 +243,8 @@
   z-index: 100; /* higher than buttons, input, labels */
 }
 
-
-// .widget-input{
-//   margin-top: 16px;
-// }
-
-// /* when container has position-left, style widget-label */
-// .labeled-input-container.position-left .widget-label {
-//   margin-top: 8px; /* or whatever value you need */
-// }
-
-// /* when container has position-left, style widget-label */
-// .labeled-input-container.position-right .widget-label {
-//   margin-top: 8px; /* or whatever value you need */
-// }
 textarea{
-// line-height: 5px;
-// height: 5px;
+
 min-height: 60px;
 vertical-align: middle;
 }

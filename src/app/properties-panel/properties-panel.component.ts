@@ -53,7 +53,6 @@ saveProductDetails() {
       clearTimeout(this.nullTemplateTimeout);
     }
 
-    // Start a fresh timeout
     this.nullTemplateTimeout = setTimeout(() => {
       this.isTemplateNull = false;
       this.nullTemplateTimeout = null;
@@ -68,12 +67,10 @@ saveProductDetails() {
 
   this.showSuccess = true;
 
-  // Clear any existing timeout
   if (this.successTimeout) {
     clearTimeout(this.successTimeout);
   }
 
-  // Start a fresh timeout
   this.successTimeout = setTimeout(() => {
     this.showSuccess = false;
     this.successTimeout = null;
