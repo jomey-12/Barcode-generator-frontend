@@ -36,9 +36,11 @@ export interface Widget {
   //separator properties
   orientation?: string;
 
+  //QR properties
   hasQr?: boolean;
   qrData?: string;
 
+  //Description properties
   descriptionLabelText?: string;
   descriptionInputValue?: string;
   descriptionHideLabel?: boolean;

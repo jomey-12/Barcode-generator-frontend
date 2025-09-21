@@ -2,23 +2,21 @@
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: center; /* centers template name */
- 
+  justify-content: center;
+
   padding: 45px;
   border-bottom: 1px solid grey;
   margin-bottom: 20px;
-  // background: linear-gradient(to bottom, #121212, transparent);
-  background: linear-gradient(
-  to bottom,
-  rgba(18, 18, 18, 1) 0%,       /* solid black at top */
-  rgba(18, 18, 18, 0.9) 40%,    /* mostly opaque */
-  rgba(18, 18, 18, 0.6) 65%,    /* semi-transparent */
-  rgba(18, 18, 18, 0.3) 85%,    /* quite transparent */
-  rgba(18, 18, 18, 0) 100%      /* fully transparent at bottom */
-);
+
+  background: linear-gradient(to bottom,
+      rgba(18, 18, 18, 1) 0%,
+      rgba(18, 18, 18, 0.9) 40%,
+      rgba(18, 18, 18, 0.6) 65%,
+      rgba(18, 18, 18, 0.3) 85%,
+      rgba(18, 18, 18, 0) 100%);
 }
 
-/* Logo fixed on extreme left */
+
 .logo {
   position: absolute;
   left: 0;
@@ -31,21 +29,21 @@
   width: 130px;
 }
 
-/* Template name centered */
+
 .template-name {
   transform: translateX(-40%);
   color: f7f7f1;
   font-weight: 600;
   font-size: 16px;
   margin: 0;
-  z-index: 1; /* stays above expanding buttons */
+  z-index: 1;
 }
 
-/* Buttons container absolute so expansion doesn't move center text */
+
 .buttons-container {
   position: absolute;
   top: 50%;
-  left: 120px; /* leaves space for logo */
+  left: 120px;
   right: 16px;
   display: flex;
   align-items: center;
@@ -53,14 +51,14 @@
   transform: translateY(-50%);
 }
 
-/* Left and Right Buttons */
+
 .left-buttons,
 .right-buttons {
   display: flex;
   gap: 10px;
 }
 
-/* Expandable Button Base */
+
 .btn,
 .expand-btn {
   display: inline-flex;
@@ -74,12 +72,12 @@
   border: none;
   overflow: hidden;
   white-space: nowrap;
-  width: 40px; /* icon only initially */
+  width: 40px;
   transition: width 0.3s ease;
 }
 
 .btn-secondary {
-  background-color: #383832 ;
+  background-color: #383832;
 }
 
 .btn i,
@@ -87,7 +85,7 @@
   flex-shrink: 0;
 }
 
-/* Hide text initially */
+
 .btn span,
 .expand-btn .btn-text {
   margin-left: 8px;
@@ -95,46 +93,50 @@
   transition: opacity 0.2s ease;
 }
 
-/* Expand on hover */
+
 .btn:hover,
 .expand-btn:hover {
-  width: 140px; /* adjust as needed */
+  width: 140px;
 }
 
 .btn:hover span,
 .expand-btn:hover .btn-text {
   opacity: 1;
 }
-.logo{
+
+.logo {
   background: url('../../assets/logo.png');
   height: 130px;
   width: 130px;
   background-size: cover;
 }
 
-.save-icon{
-    background: url('../../assets/save_2.png');
+.save-icon {
+  background: url('../../assets/save_2.png');
   height: 20px;
   width: 20px;
   background-size: cover;
   flex-shrink: 0;
 }
-.clear-icon{
-    background: url('../../assets/clear_2.png');
+
+.clear-icon {
+  background: url('../../assets/clear_2.png');
   height: 20px;
   width: 20px;
   background-size: cover;
   flex-shrink: 0;
 }
-.export-icon{
-    background: url('../../assets/export_2.png');
+
+.export-icon {
+  background: url('../../assets/export_2.png');
   height: 20px;
   width: 20px;
   background-size: cover;
   flex-shrink: 0;
 }
-.import-icon{
-    background: url('../../assets/import_3.png');
+
+.import-icon {
+  background: url('../../assets/import_3.png');
   height: 20px;
   width: 20px;
   background-size: cover;

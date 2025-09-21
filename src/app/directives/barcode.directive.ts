@@ -13,7 +13,7 @@ export class BarcodeDirective implements OnChanges {
 
   @Output() productIdChange = new EventEmitter<string>();
 
-  constructor(private el: ElementRef, private templateService: TemplateService) {}
+  constructor(private el: ElementRef, private templateService: TemplateService) { }
 
   ngOnChanges(changes: SimpleChanges) {
     let idToRender = this.productId;

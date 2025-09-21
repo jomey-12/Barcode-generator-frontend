@@ -1,9 +1,7 @@
 <div class="header">
-  <!-- Logo -->
   <div class="logo">
   </div>
 
-  <!-- Buttons -->
   <div class="buttons-container">
     <div class="left-buttons">
       <button class="btn btn-secondary" (click)="saveTemplate.emit()">
@@ -11,7 +9,7 @@
         <span>Save Template</span>
       </button>
       <button class="btn btn-secondary" (click)="clearCanvas.emit()">
-       <div class="clear-icon"></div>
+        <div class="clear-icon"></div>
         <span>Clear Canvas</span>
       </button>
     </div>
@@ -19,7 +17,7 @@
     <p class="template-name" *ngIf="templateName !== ''">Current Template: {{ templateName }}</p>
 
     <div class="right-buttons">
-<button class="btn btn-secondary" (click)="exportTemplate.emit()">
+      <button class="btn btn-secondary" (click)="exportTemplate.emit()">
         <div class="export-icon"></div>
         <span>Export PDF </span>
       </button>
@@ -28,34 +26,8 @@
         <div class="import-icon"></div>
         <span>Import Details</span>
       </button>
-             
-      <!-- <button
-        class="btn btn-primary"
-        (click)="importTemplate.emit()"
-        aria-describedby="tooltip"
-      >
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 20 20"
-          fill="none"
-          style="vertical-align: middle"
-        >
-          <path
-            d="M10 2v10m0 0l-4-4m4 4l4-4M4 16h12"
-            stroke="#333"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-        </svg>
-      </button>
-      <span class="custom-tooltip" role="tooltip" id="tooltip">
-        Bulk import product details from spreadsheet
-        <span class="tooltip-arrow"></span>
-      </span> -->
     </div>
-   
+
 
   </div>
 </div>
