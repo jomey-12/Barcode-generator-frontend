@@ -27,6 +27,11 @@ export class CanvasComponent {
   @Output() widgetResize = new EventEmitter<{widget: Widget, width: number, height: number | 'auto'}>();
   @Output() imageUpload = new EventEmitter<{widget: Widget, imageData: string, imageName: string}>();
   @Output() deselectWidget = new EventEmitter<void>();
+  @Output() masterWidgetUpdate = new EventEmitter<{ widget: Widget; updates: Partial<Widget> }>();
+
+  handleWidgetUpdate(event: { widget: Widget; updates: Partial<Widget> }) {
+    this.masterWidgetUpdate.emit(event);
+  }
 
   onDrop(event: DragEvent) {
     event.preventDefault();

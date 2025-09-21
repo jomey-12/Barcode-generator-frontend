@@ -24,6 +24,7 @@ export class WidgetComponent {
   @Output() widgetMove = new EventEmitter<{ widget: Widget, left: number, top: number }>();
   @Output() widgetResize = new EventEmitter<{ widget: Widget, width: number, height: number | 'auto' }>();
   @Output() imageUpload = new EventEmitter<{ widget: Widget, imageData: string, imageName: string }>();
+  @Output() widgetUpdate = new EventEmitter<{ widget: Widget; updates: Partial<Widget> }>();
 
   resizeDirection: string = '';
   isResizing: boolean = false;
@@ -56,6 +57,10 @@ get widgetHeightAuto() {
     event.stopPropagation();
     event.preventDefault();
     this.widgetDelete.emit(this.widget);
+  }
+
+  onProductIdUpdate(newProductId: string, widget: Widget) {
+    this.widgetUpdate.emit({ widget: widget, updates: { productId: newProductId } });
   }
 
   onMouseDown(event: MouseEvent) {
